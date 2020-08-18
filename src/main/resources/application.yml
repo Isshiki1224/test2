@@ -1,0 +1,29 @@
+
+spring:
+  #mysql&mybatis
+  datasource:
+    ecomomerce:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://10.10.10.22:3306/local_product?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8
+      username: root
+      password: root
+      type: com.alibaba.druid.pool.DruidDataSource
+    umino:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://10.10.10.22:3306/umino?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8
+      username: root
+      password: root
+      type: com.alibaba.druid.pool.DruidDataSource
+
+mybatis:
+  mapper-locations: mapper/**/*Mapper.xml
+  type-aliases-package: com.xm.split.splitnewactivity.entity
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# pageHelper
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSq

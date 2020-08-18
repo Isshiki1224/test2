@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xm.commerce.system.web.umino.mapper.OcProductOptionValueMapper">
+  <resultMap id="BaseResultMap" type="com.xm.commerce.system.entity.OcProductOptionValue">
+    <!--@mbg.generated-->
+    <!--@Table oc_product_option_value-->
+    <id column="product_option_value_id" jdbcType="INTEGER" property="productOptionValueId" />
+    <result column="product_option_id" jdbcType="INTEGER" property="productOptionId" />
+    <result column="product_id" jdbcType="INTEGER" property="productId" />
+    <result column="option_id" jdbcType="INTEGER" property="optionId" />
+    <result column="option_value_id" jdbcType="INTEGER" property="optionValueId" />
+    <result column="quantity" jdbcType="INTEGER" property="quantity" />
+    <result column="subtract" jdbcType="BOOLEAN" property="subtract" />
+    <result column="price" jdbcType="DECIMAL" property="price" />
+    <result column="price_prefix" jdbcType="VARCHAR" property="pricePrefix" />
+    <result column="points" jdbcType="INTEGER" property="points" />
+    <result column="points_prefix" jdbcType="VARCHAR" property="pointsPrefix" />
+    <result column="weight" jdbcType="DECIMAL" property="weight" />
+    <result column="weight_prefix" jdbcType="VARCHAR" property="weightPrefix" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    product_option_value_id, product_option_id, product_id, option_id, option_value_id, 
+    quantity, subtract, price, price_prefix, points, points_prefix, weight, weight_prefix
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from oc_product_option_value
+    where product_option_value_id = #{productOptionValueId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <!--@mbg.generated-->
+    delete from oc_product_option_value
+    where product_option_value_id = #{productOptionValueId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="product_option_value_id" keyProperty="productOptionValueId" parameterType="com.xm.commerce.system.entity.OcProductOptionValue" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into oc_product_option_value (product_option_id, product_id, option_id, 
+      option_value_id, quantity, subtract, 
+      price, price_prefix, points, 
+      points_prefix, weight, weight_prefix
+      )
+    values (#{productOptionId,jdbcType=INTEGER}, #{productId,jdbcType=INTEGER}, #{optionId,jdbcType=INTEGER}, 
+      #{optionValueId,jdbcType=INTEGER}, #{quantity,jdbcType=INTEGER}, #{subtract,jdbcType=BOOLEAN}, 
+      #{price,jdbcType=DECIMAL}, #{pricePrefix,jdbcType=VARCHAR}, #{points,jdbcType=INTEGER}, 
+      #{pointsPrefix,jdbcType=VARCHAR}, #{weight,jdbcType=DECIMAL}, #{weightPrefix,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" keyColumn="product_option_value_id" keyProperty="productOptionValueId" parameterType="com.xm.commerce.system.entity.OcProductOptionValue" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into oc_product_option_value
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="productOptionId != null">
+        product_option_id,
+      </if>
+      <if test="productId != null">
+        product_id,
+      </if>
+      <if test="optionId != null">
+        option_id,
+      </if>
+      <if test="optionValueId != null">
+        option_value_id,
+      </if>
+      <if test="quantity != null">
+        quantity,
+      </if>
+      <if test="subtract != null">
+        subtract,
+      </if>
+      <if test="price != null">
+        price,
+      </if>
+      <if test="pricePrefix != null">
+        price_prefix,
+      </if>
+      <if test="points != null">
+        points,
+      </if>
+      <if test="pointsPrefix != null">
+        points_prefix,
+      </if>
+      <if test="weight != null">
+        weight,
+      </if>
+      <if test="weightPrefix != null">
+        weight_prefix,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="productOptionId != null">
+        #{productOptionId,jdbcType=INTEGER},
+      </if>
+      <if test="productId != null">
+        #{productId,jdbcType=INTEGER},
+      </if>
+      <if test="optionId != null">
+        #{optionId,jdbcType=INTEGER},
+      </if>
+      <if test="optionValueId != null">
+        #{optionValueId,jdbcType=INTEGER},
+      </if>
+      <if test="quantity != null">
+        #{quantity,jdbcType=INTEGER},
+      </if>
+      <if test="subtract != null">
+        #{subtract,jdbcType=BOOLEAN},
+      </if>
+      <if test="price != null">
+        #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="pricePrefix != null">
+        #{pricePrefix,jdbcType=VARCHAR},
+      </if>
+      <if test="points != null">
+        #{points,jdbcType=INTEGER},
+      </if>
+      <if test="pointsPrefix != null">
+        #{pointsPrefix,jdbcType=VARCHAR},
+      </if>
+      <if test="weight != null">
+        #{weight,jdbcType=DECIMAL},
+      </if>
+      <if test="weightPrefix != null">
+        #{weightPrefix,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xm.commerce.system.entity.OcProductOptionValue">
+    <!--@mbg.generated-->
+    update oc_product_option_value
+    <set>
+      <if test="productOptionId != null">
+        product_option_id = #{productOptionId,jdbcType=INTEGER},
+      </if>
+      <if test="productId != null">
+        product_id = #{productId,jdbcType=INTEGER},
+      </if>
+      <if test="optionId != null">
+        option_id = #{optionId,jdbcType=INTEGER},
+      </if>
+      <if test="optionValueId != null">
+        option_value_id = #{optionValueId,jdbcType=INTEGER},
+      </if>
+      <if test="quantity != null">
+        quantity = #{quantity,jdbcType=INTEGER},
+      </if>
+      <if test="subtract != null">
+        subtract = #{subtract,jdbcType=BOOLEAN},
+      </if>
+      <if test="price != null">
+        price = #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="pricePrefix != null">
+        price_prefix = #{pricePrefix,jdbcType=VARCHAR},
+      </if>
+      <if test="points != null">
+        points = #{points,jdbcType=INTEGER},
+      </if>
+      <if test="pointsPrefix != null">
+        points_prefix = #{pointsPrefix,jdbcType=VARCHAR},
+      </if>
+      <if test="weight != null">
+        weight = #{weight,jdbcType=DECIMAL},
+      </if>
+      <if test="weightPrefix != null">
+        weight_prefix = #{weightPrefix,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where product_option_value_id = #{productOptionValueId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xm.commerce.system.entity.OcProductOptionValue">
+    <!--@mbg.generated-->
+    update oc_product_option_value
+    set product_option_id = #{productOptionId,jdbcType=INTEGER},
+      product_id = #{productId,jdbcType=INTEGER},
+      option_id = #{optionId,jdbcType=INTEGER},
+      option_value_id = #{optionValueId,jdbcType=INTEGER},
+      quantity = #{quantity,jdbcType=INTEGER},
+      subtract = #{subtract,jdbcType=BOOLEAN},
+      price = #{price,jdbcType=DECIMAL},
+      price_prefix = #{pricePrefix,jdbcType=VARCHAR},
+      points = #{points,jdbcType=INTEGER},
+      points_prefix = #{pointsPrefix,jdbcType=VARCHAR},
+      weight = #{weight,jdbcType=DECIMAL},
+      weight_prefix = #{weightPrefix,jdbcType=VARCHAR}
+    where product_option_value_id = #{productOptionValueId,jdbcType=INTEGER}
+  </update>
+</mapper>

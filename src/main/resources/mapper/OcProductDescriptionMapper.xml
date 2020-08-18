@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xm.commerce.system.web.umino.mapper.OcProductDescriptionMapper">
+  <resultMap id="BaseResultMap" type="com.xm.commerce.system.entity.OcProductDescription">
+    <!--@mbg.generated-->
+    <!--@Table oc_product_description-->
+    <id column="product_id" jdbcType="INTEGER" property="productId" />
+    <id column="language_id" jdbcType="INTEGER" property="languageId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="description" jdbcType="LONGVARCHAR" property="description" />
+    <result column="tag" jdbcType="LONGVARCHAR" property="tag" />
+    <result column="meta_title" jdbcType="VARCHAR" property="metaTitle" />
+    <result column="meta_description" jdbcType="VARCHAR" property="metaDescription" />
+    <result column="meta_keyword" jdbcType="VARCHAR" property="metaKeyword" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    product_id, language_id, `name`, description, tag, meta_title, meta_description, 
+    meta_keyword
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from oc_product_description
+    where product_id = #{productId,jdbcType=INTEGER}
+      and language_id = #{languageId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    <!--@mbg.generated-->
+    delete from oc_product_description
+    where product_id = #{productId,jdbcType=INTEGER}
+      and language_id = #{languageId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xm.commerce.system.entity.OcProductDescription">
+    <!--@mbg.generated-->
+    insert into oc_product_description (product_id, language_id, `name`, 
+      description, tag, meta_title, 
+      meta_description, meta_keyword)
+    values (#{productId,jdbcType=INTEGER}, #{languageId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, 
+      #{description,jdbcType=LONGVARCHAR}, #{tag,jdbcType=LONGVARCHAR}, #{metaTitle,jdbcType=VARCHAR}, 
+      #{metaDescription,jdbcType=VARCHAR}, #{metaKeyword,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xm.commerce.system.entity.OcProductDescription">
+    <!--@mbg.generated-->
+    insert into oc_product_description
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="productId != null">
+        product_id,
+      </if>
+      <if test="languageId != null">
+        language_id,
+      </if>
+      <if test="name != null">
+        `name`,
+      </if>
+      <if test="description != null">
+        description,
+      </if>
+      <if test="tag != null">
+        tag,
+      </if>
+      <if test="metaTitle != null">
+        meta_title,
+      </if>
+      <if test="metaDescription != null">
+        meta_description,
+      </if>
+      <if test="metaKeyword != null">
+        meta_keyword,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="productId != null">
+        #{productId,jdbcType=INTEGER},
+      </if>
+      <if test="languageId != null">
+        #{languageId,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="tag != null">
+        #{tag,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="metaTitle != null">
+        #{metaTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="metaDescription != null">
+        #{metaDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="metaKeyword != null">
+        #{metaKeyword,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xm.commerce.system.entity.OcProductDescription">
+    <!--@mbg.generated-->
+    update oc_product_description
+    <set>
+      <if test="name != null">
+        `name` = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        description = #{description,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="tag != null">
+        tag = #{tag,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="metaTitle != null">
+        meta_title = #{metaTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="metaDescription != null">
+        meta_description = #{metaDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="metaKeyword != null">
+        meta_keyword = #{metaKeyword,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where product_id = #{productId,jdbcType=INTEGER}
+      and language_id = #{languageId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xm.commerce.system.entity.OcProductDescription">
+    <!--@mbg.generated-->
+    update oc_product_description
+    set `name` = #{name,jdbcType=VARCHAR},
+      description = #{description,jdbcType=LONGVARCHAR},
+      tag = #{tag,jdbcType=LONGVARCHAR},
+      meta_title = #{metaTitle,jdbcType=VARCHAR},
+      meta_description = #{metaDescription,jdbcType=VARCHAR},
+      meta_keyword = #{metaKeyword,jdbcType=VARCHAR}
+    where product_id = #{productId,jdbcType=INTEGER}
+      and language_id = #{languageId,jdbcType=INTEGER}
+  </update>
+</mapper>
