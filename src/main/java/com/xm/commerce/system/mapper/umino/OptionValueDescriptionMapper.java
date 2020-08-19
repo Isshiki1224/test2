@@ -1,6 +1,6 @@
 package com.xm.commerce.system.mapper.umino;
 
-import com.xm.commerce.system.entity.umino.OptionValueDescription;
+import com.xm.commerce.system.model.entity.umino.OptionValueDescription;
 import org.apache.ibatis.annotations.Param;
 
 public interface OptionValueDescriptionMapper {

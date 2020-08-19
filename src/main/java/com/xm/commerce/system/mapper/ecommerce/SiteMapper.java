@@ -1,6 +1,6 @@
 package com.xm.commerce.system.mapper.ecommerce;
 
-import com.xm.commerce.system.entity.ecommerce.Site;
+import com.xm.commerce.system.model.entity.ecommerce.Site;
 
 public interface SiteMapper {
     int deleteByPrimaryKey(Integer id);

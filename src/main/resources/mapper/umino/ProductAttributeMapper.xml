@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.xm.commerce.system.mapper.umino.ProductAttributeMapper">
-  <resultMap id="BaseResultMap" type="com.xm.commerce.system.entity.umino.ProductAttribute">
+  <resultMap id="BaseResultMap" type="com.xm.commerce.system.model.entity.umino.ProductAttribute">
     <!--@mbg.generated-->
     <!--@Table oc_product_attribute-->
     <id column="product_id" jdbcType="INTEGER" property="productId" />
@@ -29,14 +29,14 @@
       and attribute_id = #{attributeId,jdbcType=INTEGER}
       and language_id = #{languageId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.xm.commerce.system.entity.umino.ProductAttribute">
+  <insert id="insert" parameterType="com.xm.commerce.system.model.entity.umino.ProductAttribute">
     <!--@mbg.generated-->
     insert into oc_product_attribute (product_id, attribute_id, language_id, 
       `text`)
     values (#{productId,jdbcType=INTEGER}, #{attributeId,jdbcType=INTEGER}, #{languageId,jdbcType=INTEGER}, 
       #{text,jdbcType=LONGVARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.xm.commerce.system.entity.umino.ProductAttribute">
+  <insert id="insertSelective" parameterType="com.xm.commerce.system.model.entity.umino.ProductAttribute">
     <!--@mbg.generated-->
     insert into oc_product_attribute
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -68,7 +68,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.xm.commerce.system.entity.umino.ProductAttribute">
+  <update id="updateByPrimaryKeySelective" parameterType="com.xm.commerce.system.model.entity.umino.ProductAttribute">
     <!--@mbg.generated-->
     update oc_product_attribute
     <set>
@@ -80,7 +80,7 @@
       and attribute_id = #{attributeId,jdbcType=INTEGER}
       and language_id = #{languageId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.xm.commerce.system.entity.umino.ProductAttribute">
+  <update id="updateByPrimaryKey" parameterType="com.xm.commerce.system.model.entity.umino.ProductAttribute">
     <!--@mbg.generated-->
     update oc_product_attribute
     set `text` = #{text,jdbcType=LONGVARCHAR}

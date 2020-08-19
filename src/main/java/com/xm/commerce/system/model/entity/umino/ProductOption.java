@@ -1,4 +1,4 @@
-package com.xm.commerce.system.entity.umino;
+package com.xm.commerce.system.model.entity.umino;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,10 +13,14 @@ import lombok.ToString;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class OptionDescription {
+public class ProductOption {
+	private Integer productOptionId;
+
+	private Integer productId;
+
 	private Integer optionId;
 
-	private Integer languageId;
+	private String value;
 
-	private String name;
+	private Boolean required;
 }

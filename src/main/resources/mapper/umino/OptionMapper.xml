@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.xm.commerce.system.mapper.umino.OptionMapper">
-  <resultMap id="BaseResultMap" type="com.xm.commerce.system.entity.umino.Option">
+  <resultMap id="BaseResultMap" type="com.xm.commerce.system.model.entity.umino.Option">
     <!--@mbg.generated-->
     <!--@Table oc_option-->
     <id column="option_id" jdbcType="INTEGER" property="optionId" />
@@ -24,12 +24,12 @@
     delete from oc_option
     where option_id = #{optionId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="option_id" keyProperty="optionId" parameterType="com.xm.commerce.system.entity.umino.Option" useGeneratedKeys="true">
+  <insert id="insert" keyColumn="option_id" keyProperty="optionId" parameterType="com.xm.commerce.system.model.entity.umino.Option" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into oc_option (`type`, sort_order)
     values (#{type,jdbcType=VARCHAR}, #{sortOrder,jdbcType=INTEGER})
   </insert>
-  <insert id="insertSelective" keyColumn="option_id" keyProperty="optionId" parameterType="com.xm.commerce.system.entity.umino.Option" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="option_id" keyProperty="optionId" parameterType="com.xm.commerce.system.model.entity.umino.Option" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into oc_option
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -49,7 +49,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.xm.commerce.system.entity.umino.Option">
+  <update id="updateByPrimaryKeySelective" parameterType="com.xm.commerce.system.model.entity.umino.Option">
     <!--@mbg.generated-->
     update oc_option
     <set>
@@ -62,7 +62,7 @@
     </set>
     where option_id = #{optionId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.xm.commerce.system.entity.umino.Option">
+  <update id="updateByPrimaryKey" parameterType="com.xm.commerce.system.model.entity.umino.Option">
     <!--@mbg.generated-->
     update oc_option
     set `type` = #{type,jdbcType=VARCHAR},

@@ -1,6 +1,6 @@
 package com.xm.commerce.system.mapper.umino;
 
-import com.xm.commerce.system.entity.umino.Option;
+import com.xm.commerce.system.model.entity.umino.Option;
 
 public interface OptionMapper {
 	int deleteByPrimaryKey(Integer optionId);

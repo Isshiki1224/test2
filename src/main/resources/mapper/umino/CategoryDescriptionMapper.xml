@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.xm.commerce.system.mapper.umino.CategoryDescriptionMapper">
-  <resultMap id="BaseResultMap" type="com.xm.commerce.system.entity.umino.CategoryDescription">
+  <resultMap id="BaseResultMap" type="com.xm.commerce.system.model.entity.umino.CategoryDescription">
     <!--@mbg.generated-->
     <!--@Table oc_category_description-->
     <id column="category_id" jdbcType="INTEGER" property="categoryId" />
@@ -30,7 +30,7 @@
     where category_id = #{categoryId,jdbcType=INTEGER}
       and language_id = #{languageId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.xm.commerce.system.entity.umino.CategoryDescription">
+  <insert id="insert" parameterType="com.xm.commerce.system.model.entity.umino.CategoryDescription">
     <!--@mbg.generated-->
     insert into oc_category_description (category_id, language_id, `name`, 
       description, meta_title, meta_description, 
@@ -39,7 +39,7 @@
       #{description,jdbcType=LONGVARCHAR}, #{metaTitle,jdbcType=VARCHAR}, #{metaDescription,jdbcType=VARCHAR}, 
       #{metaKeyword,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.xm.commerce.system.entity.umino.CategoryDescription">
+  <insert id="insertSelective" parameterType="com.xm.commerce.system.model.entity.umino.CategoryDescription">
     <!--@mbg.generated-->
     insert into oc_category_description
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -89,7 +89,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.xm.commerce.system.entity.umino.CategoryDescription">
+  <update id="updateByPrimaryKeySelective" parameterType="com.xm.commerce.system.model.entity.umino.CategoryDescription">
     <!--@mbg.generated-->
     update oc_category_description
     <set>
@@ -112,7 +112,7 @@
     where category_id = #{categoryId,jdbcType=INTEGER}
       and language_id = #{languageId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.xm.commerce.system.entity.umino.CategoryDescription">
+  <update id="updateByPrimaryKey" parameterType="com.xm.commerce.system.model.entity.umino.CategoryDescription">
     <!--@mbg.generated-->
     update oc_category_description
     set `name` = #{name,jdbcType=VARCHAR},

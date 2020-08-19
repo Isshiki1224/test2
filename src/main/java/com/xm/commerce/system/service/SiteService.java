@@ -3,7 +3,7 @@ package com.xm.commerce.system.service;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import com.xm.commerce.system.mapper.ecommerce.SiteMapper;
-import com.xm.commerce.system.entity.ecommerce.Site;
+import com.xm.commerce.system.model.entity.ecommerce.Site;
 @Service
 public class SiteService{
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.xm.commerce.system.mapper.umino.ProductToCategoryMapper">
-  <resultMap id="BaseResultMap" type="com.xm.commerce.system.entity.umino.ProductToCategory">
+  <resultMap id="BaseResultMap" type="com.xm.commerce.system.model.entity.umino.ProductToCategory">
     <!--@mbg.generated-->
     <!--@Table oc_product_to_category-->
     <id column="product_id" jdbcType="INTEGER" property="productId" />
@@ -17,12 +17,12 @@
     where product_id = #{productId,jdbcType=INTEGER}
       and category_id = #{categoryId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.xm.commerce.system.entity.umino.ProductToCategory">
+  <insert id="insert" parameterType="com.xm.commerce.system.model.entity.umino.ProductToCategory">
     <!--@mbg.generated-->
     insert into oc_product_to_category (product_id, category_id)
     values (#{productId,jdbcType=INTEGER}, #{categoryId,jdbcType=INTEGER})
   </insert>
-  <insert id="insertSelective" parameterType="com.xm.commerce.system.entity.umino.ProductToCategory">
+  <insert id="insertSelective" parameterType="com.xm.commerce.system.model.entity.umino.ProductToCategory">
     <!--@mbg.generated-->
     insert into oc_product_to_category
     <trim prefix="(" suffix=")" suffixOverrides=",">

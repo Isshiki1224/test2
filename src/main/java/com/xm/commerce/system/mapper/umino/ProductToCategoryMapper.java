@@ -1,6 +1,6 @@
 package com.xm.commerce.system.mapper.umino;
 
-import com.xm.commerce.system.entity.umino.ProductToCategory;
+import com.xm.commerce.system.model.entity.umino.ProductToCategory;
 import org.apache.ibatis.annotations.Param;
 
 public interface ProductToCategoryMapper {

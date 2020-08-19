@@ -1,6 +1,6 @@
 package com.xm.commerce.system.mapper.umino;
 
-import com.xm.commerce.system.entity.umino.ProductDescription;
+import com.xm.commerce.system.model.entity.umino.ProductDescription;
 import org.apache.ibatis.annotations.Param;
 
 public interface ProductDescriptionMapper {

@@ -1,6 +1,6 @@
 package com.xm.commerce.system.mapper.ecommerce;
 
-import com.xm.commerce.system.entity.ecommerce.ProductStore;
+import com.xm.commerce.system.model.entity.ecommerce.ProductStore;
 
 public interface ProductStoreMapper {
     int deleteByPrimaryKey(Integer id);

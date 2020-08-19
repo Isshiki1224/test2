@@ -1,8 +1,8 @@
 package com.xm.commerce.system.service;
 
 
-import com.xm.commerce.system.entity.ecommerce.ProductStore;
-import com.xm.commerce.system.entity.umino.*;
+import com.xm.commerce.system.model.entity.ecommerce.ProductStore;
+import com.xm.commerce.system.model.entity.umino.*;
 import com.xm.commerce.system.mapper.umino.*;
 import com.xm.commerce.system.util.DateUtil;
 import org.json.JSONArray;

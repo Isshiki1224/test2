@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.xm.commerce.system.mapper.umino.OptionValueMapper">
-  <resultMap id="BaseResultMap" type="com.xm.commerce.system.entity.umino.OptionValue">
+  <resultMap id="BaseResultMap" type="com.xm.commerce.system.model.entity.umino.OptionValue">
     <!--@mbg.generated-->
     <!--@Table oc_option_value-->
     <id column="option_value_id" jdbcType="INTEGER" property="optionValueId" />
@@ -25,14 +25,14 @@
     delete from oc_option_value
     where option_value_id = #{optionValueId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="option_value_id" keyProperty="optionValueId" parameterType="com.xm.commerce.system.entity.umino.OptionValue" useGeneratedKeys="true">
+  <insert id="insert" keyColumn="option_value_id" keyProperty="optionValueId" parameterType="com.xm.commerce.system.model.entity.umino.OptionValue" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into oc_option_value (option_id, image, sort_order
       )
     values (#{optionId,jdbcType=INTEGER}, #{image,jdbcType=VARCHAR}, #{sortOrder,jdbcType=INTEGER}
       )
   </insert>
-  <insert id="insertSelective" keyColumn="option_value_id" keyProperty="optionValueId" parameterType="com.xm.commerce.system.entity.umino.OptionValue" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="option_value_id" keyProperty="optionValueId" parameterType="com.xm.commerce.system.model.entity.umino.OptionValue" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into oc_option_value
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -58,7 +58,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.xm.commerce.system.entity.umino.OptionValue">
+  <update id="updateByPrimaryKeySelective" parameterType="com.xm.commerce.system.model.entity.umino.OptionValue">
     <!--@mbg.generated-->
     update oc_option_value
     <set>
@@ -74,7 +74,7 @@
     </set>
     where option_value_id = #{optionValueId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.xm.commerce.system.entity.umino.OptionValue">
+  <update id="updateByPrimaryKey" parameterType="com.xm.commerce.system.model.entity.umino.OptionValue">
     <!--@mbg.generated-->
     update oc_option_value
     set option_id = #{optionId,jdbcType=INTEGER},

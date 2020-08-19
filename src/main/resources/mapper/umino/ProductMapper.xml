@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.xm.commerce.system.mapper.umino.ProductMapper">
-  <resultMap id="BaseResultMap" type="com.xm.commerce.system.entity.umino.Product">
+  <resultMap id="BaseResultMap" type="com.xm.commerce.system.model.entity.umino.Product">
     <!--@mbg.generated-->
     <!--@Table oc_product-->
     <id column="product_id" jdbcType="INTEGER" property="productId" />
@@ -55,7 +55,7 @@
     delete from oc_product
     where product_id = #{productId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="product_id" keyProperty="productId" parameterType="com.xm.commerce.system.entity.umino.Product" useGeneratedKeys="true">
+  <insert id="insert" keyColumn="product_id" keyProperty="productId" parameterType="com.xm.commerce.system.model.entity.umino.Product" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into oc_product (model, sku, upc, 
       ean, jan, isbn, mpn, 
@@ -78,7 +78,7 @@
       #{sortOrder,jdbcType=INTEGER}, #{status,jdbcType=BOOLEAN}, #{viewed,jdbcType=INTEGER}, 
       #{dateAdded,jdbcType=TIMESTAMP}, #{dateModified,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" keyColumn="product_id" keyProperty="productId" parameterType="com.xm.commerce.system.entity.umino.Product" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="product_id" keyProperty="productId" parameterType="com.xm.commerce.system.model.entity.umino.Product" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into oc_product
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -266,7 +266,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.xm.commerce.system.entity.umino.Product">
+  <update id="updateByPrimaryKeySelective" parameterType="com.xm.commerce.system.model.entity.umino.Product">
     <!--@mbg.generated-->
     update oc_product
     <set>
@@ -363,7 +363,7 @@
     </set>
     where product_id = #{productId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.xm.commerce.system.entity.umino.Product">
+  <update id="updateByPrimaryKey" parameterType="com.xm.commerce.system.model.entity.umino.Product">
     <!--@mbg.generated-->
     update oc_product
     set model = #{model,jdbcType=VARCHAR},

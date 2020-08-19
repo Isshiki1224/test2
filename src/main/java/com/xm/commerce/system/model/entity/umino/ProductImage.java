@@ -1,4 +1,4 @@
-package com.xm.commerce.system.entity.umino;
+package com.xm.commerce.system.model.entity.umino;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,12 +13,16 @@ import lombok.ToString;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductAttribute {
+public class ProductImage {
+	private Integer productImageId;
+
 	private Integer productId;
 
-	private Integer attributeId;
+	private String image;
 
-	private Integer languageId;
+	private Integer sortOrder;
 
-	private String text;
+	private Boolean isRotate;
+
+	private Integer productOptionValueId;
 }

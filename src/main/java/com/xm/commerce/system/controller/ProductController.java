@@ -1,8 +1,8 @@
 package com.xm.commerce.system.controller;
 
-import com.xm.commerce.system.entity.ecommerce.ProductStore;
-import com.xm.commerce.system.entity.request.CategoryRequest;
-import com.xm.commerce.system.entity.response.ResponseData;
+import com.xm.commerce.system.model.entity.ecommerce.ProductStore;
+import com.xm.commerce.system.model.request.CategoryRequest;
+import com.xm.commerce.system.model.response.ResponseData;
 
 import com.xm.commerce.system.service.ProductStoreService;
 import org.springframework.web.bind.annotation.*;

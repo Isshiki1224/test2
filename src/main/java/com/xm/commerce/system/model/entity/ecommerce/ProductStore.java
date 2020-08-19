@@ -1,4 +1,4 @@
-package com.xm.commerce.system.entity.ecommerce;
+package com.xm.commerce.system.model.entity.ecommerce;
 
 import java.math.BigDecimal;
 import lombok.AllArgsConstructor;

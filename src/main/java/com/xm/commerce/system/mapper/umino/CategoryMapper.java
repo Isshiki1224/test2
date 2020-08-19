@@ -1,6 +1,6 @@
 package com.xm.commerce.system.mapper.umino;
 
-import com.xm.commerce.system.entity.umino.Category;
+import com.xm.commerce.system.model.entity.umino.Category;
 
 public interface CategoryMapper {
 	int deleteByPrimaryKey(Integer categoryId);

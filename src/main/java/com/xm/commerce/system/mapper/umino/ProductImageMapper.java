@@ -1,6 +1,6 @@
 package com.xm.commerce.system.mapper.umino;
 
-import com.xm.commerce.system.entity.umino.ProductImage;
+import com.xm.commerce.system.model.entity.umino.ProductImage;
 
 public interface ProductImageMapper {
 	int deleteByPrimaryKey(Integer productImageId);

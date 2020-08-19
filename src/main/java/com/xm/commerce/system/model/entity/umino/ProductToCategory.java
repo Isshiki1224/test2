@@ -1,4 +1,4 @@
-package com.xm.commerce.system.entity.umino;
+package com.xm.commerce.system.model.entity.umino;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,12 +13,8 @@ import lombok.ToString;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class OptionValue {
-	private Integer optionValueId;
+public class ProductToCategory {
+	private Integer productId;
 
-	private Integer optionId;
-
-	private String image;
-
-	private Integer sortOrder;
+	private Integer categoryId;
 }

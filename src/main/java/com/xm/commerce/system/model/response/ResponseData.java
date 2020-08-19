@@ -1,4 +1,4 @@
-package com.xm.commerce.system.entity.response;
+package com.xm.commerce.system.model.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

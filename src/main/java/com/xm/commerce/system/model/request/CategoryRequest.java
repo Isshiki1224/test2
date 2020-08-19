@@ -1,4 +1,4 @@
-package com.xm.commerce.system.entity.request;
+package com.xm.commerce.system.model.request;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.xm.commerce.system.mapper.umino.ProductImageMapper">
-  <resultMap id="BaseResultMap" type="com.xm.commerce.system.entity.umino.ProductImage">
+  <resultMap id="BaseResultMap" type="com.xm.commerce.system.model.entity.umino.ProductImage">
     <!--@mbg.generated-->
     <!--@Table oc_product_image-->
     <id column="product_image_id" jdbcType="INTEGER" property="productImageId" />
@@ -27,14 +27,14 @@
     delete from oc_product_image
     where product_image_id = #{productImageId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="product_image_id" keyProperty="productImageId" parameterType="com.xm.commerce.system.entity.umino.ProductImage" useGeneratedKeys="true">
+  <insert id="insert" keyColumn="product_image_id" keyProperty="productImageId" parameterType="com.xm.commerce.system.model.entity.umino.ProductImage" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into oc_product_image (product_id, image, sort_order, 
       is_rotate, product_option_value_id)
     values (#{productId,jdbcType=INTEGER}, #{image,jdbcType=VARCHAR}, #{sortOrder,jdbcType=INTEGER}, 
       #{isRotate,jdbcType=BOOLEAN}, #{productOptionValueId,jdbcType=INTEGER})
   </insert>
-  <insert id="insertSelective" keyColumn="product_image_id" keyProperty="productImageId" parameterType="com.xm.commerce.system.entity.umino.ProductImage" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="product_image_id" keyProperty="productImageId" parameterType="com.xm.commerce.system.model.entity.umino.ProductImage" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into oc_product_image
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -72,7 +72,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.xm.commerce.system.entity.umino.ProductImage">
+  <update id="updateByPrimaryKeySelective" parameterType="com.xm.commerce.system.model.entity.umino.ProductImage">
     <!--@mbg.generated-->
     update oc_product_image
     <set>
@@ -94,7 +94,7 @@
     </set>
     where product_image_id = #{productImageId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.xm.commerce.system.entity.umino.ProductImage">
+  <update id="updateByPrimaryKey" parameterType="com.xm.commerce.system.model.entity.umino.ProductImage">
     <!--@mbg.generated-->
     update oc_product_image
     set product_id = #{productId,jdbcType=INTEGER},

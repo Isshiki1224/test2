@@ -1,6 +1,6 @@
 package com.xm.commerce.system.controller;
 
-import com.xm.commerce.system.entity.response.ResponseData;
+import com.xm.commerce.system.model.response.ResponseData;
 import com.xm.commerce.system.service.Upload2WebProductService;
 import org.springframework.web.bind.annotation.*;
 
