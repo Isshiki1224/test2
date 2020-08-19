@@ -2,7 +2,7 @@ package com.xm.commerce.system.util;
 
 
 
-import com.xm.commerce.system.response.WeChatResult;
+import com.xm.commerce.system.entity.response.WeChatResult;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.net.ssl.*;

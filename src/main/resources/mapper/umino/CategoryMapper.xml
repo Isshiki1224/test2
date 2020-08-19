@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xm.commerce.system.mapper.umino.CategoryMapper">
+  <resultMap id="BaseResultMap" type="com.xm.commerce.system.entity.umino.Category">
+    <!--@mbg.generated-->
+    <!--@Table oc_category-->
+    <id column="category_id" jdbcType="INTEGER" property="categoryId" />
+    <result column="image" jdbcType="VARCHAR" property="image" />
+    <result column="parent_id" jdbcType="INTEGER" property="parentId" />
+    <result column="top" jdbcType="BOOLEAN" property="top" />
+    <result column="column" jdbcType="INTEGER" property="column" />
+    <result column="sort_order" jdbcType="INTEGER" property="sortOrder" />
+    <result column="status" jdbcType="BOOLEAN" property="status" />
+    <result column="date_added" jdbcType="TIMESTAMP" property="dateAdded" />
+    <result column="date_modified" jdbcType="TIMESTAMP" property="dateModified" />
+    <result column="secondary_image" jdbcType="VARCHAR" property="secondaryImage" />
+    <result column="alternative_image" jdbcType="VARCHAR" property="alternativeImage" />
+    <result column="is_featured" jdbcType="BOOLEAN" property="isFeatured" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    category_id, image, parent_id, `top`, `column`, sort_order, `status`, date_added, 
+    date_modified, secondary_image, alternative_image, is_featured
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from oc_category
+    where category_id = #{categoryId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <!--@mbg.generated-->
+    delete from oc_category
+    where category_id = #{categoryId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="category_id" keyProperty="categoryId" parameterType="com.xm.commerce.system.entity.umino.Category" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into oc_category (image, parent_id, `top`, 
+      `column`, sort_order, `status`, 
+      date_added, date_modified, secondary_image, 
+      alternative_image, is_featured)
+    values (#{image,jdbcType=VARCHAR}, #{parentId,jdbcType=INTEGER}, #{top,jdbcType=BOOLEAN}, 
+      #{column,jdbcType=INTEGER}, #{sortOrder,jdbcType=INTEGER}, #{status,jdbcType=BOOLEAN}, 
+      #{dateAdded,jdbcType=TIMESTAMP}, #{dateModified,jdbcType=TIMESTAMP}, #{secondaryImage,jdbcType=VARCHAR}, 
+      #{alternativeImage,jdbcType=VARCHAR}, #{isFeatured,jdbcType=BOOLEAN})
+  </insert>
+  <insert id="insertSelective" keyColumn="category_id" keyProperty="categoryId" parameterType="com.xm.commerce.system.entity.umino.Category" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into oc_category
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="image != null">
+        image,
+      </if>
+      <if test="parentId != null">
+        parent_id,
+      </if>
+      <if test="top != null">
+        `top`,
+      </if>
+      <if test="column != null">
+        `column`,
+      </if>
+      <if test="sortOrder != null">
+        sort_order,
+      </if>
+      <if test="status != null">
+        `status`,
+      </if>
+      <if test="dateAdded != null">
+        date_added,
+      </if>
+      <if test="dateModified != null">
+        date_modified,
+      </if>
+      <if test="secondaryImage != null">
+        secondary_image,
+      </if>
+      <if test="alternativeImage != null">
+        alternative_image,
+      </if>
+      <if test="isFeatured != null">
+        is_featured,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="image != null">
+        #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null">
+        #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="top != null">
+        #{top,jdbcType=BOOLEAN},
+      </if>
+      <if test="column != null">
+        #{column,jdbcType=INTEGER},
+      </if>
+      <if test="sortOrder != null">
+        #{sortOrder,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=BOOLEAN},
+      </if>
+      <if test="dateAdded != null">
+        #{dateAdded,jdbcType=TIMESTAMP},
+      </if>
+      <if test="dateModified != null">
+        #{dateModified,jdbcType=TIMESTAMP},
+      </if>
+      <if test="secondaryImage != null">
+        #{secondaryImage,jdbcType=VARCHAR},
+      </if>
+      <if test="alternativeImage != null">
+        #{alternativeImage,jdbcType=VARCHAR},
+      </if>
+      <if test="isFeatured != null">
+        #{isFeatured,jdbcType=BOOLEAN},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xm.commerce.system.entity.umino.Category">
+    <!--@mbg.generated-->
+    update oc_category
+    <set>
+      <if test="image != null">
+        image = #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null">
+        parent_id = #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="top != null">
+        `top` = #{top,jdbcType=BOOLEAN},
+      </if>
+      <if test="column != null">
+        `column` = #{column,jdbcType=INTEGER},
+      </if>
+      <if test="sortOrder != null">
+        sort_order = #{sortOrder,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        `status` = #{status,jdbcType=BOOLEAN},
+      </if>
+      <if test="dateAdded != null">
+        date_added = #{dateAdded,jdbcType=TIMESTAMP},
+      </if>
+      <if test="dateModified != null">
+        date_modified = #{dateModified,jdbcType=TIMESTAMP},
+      </if>
+      <if test="secondaryImage != null">
+        secondary_image = #{secondaryImage,jdbcType=VARCHAR},
+      </if>
+      <if test="alternativeImage != null">
+        alternative_image = #{alternativeImage,jdbcType=VARCHAR},
+      </if>
+      <if test="isFeatured != null">
+        is_featured = #{isFeatured,jdbcType=BOOLEAN},
+      </if>
+    </set>
+    where category_id = #{categoryId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xm.commerce.system.entity.umino.Category">
+    <!--@mbg.generated-->
+    update oc_category
+    set image = #{image,jdbcType=VARCHAR},
+      parent_id = #{parentId,jdbcType=INTEGER},
+      `top` = #{top,jdbcType=BOOLEAN},
+      `column` = #{column,jdbcType=INTEGER},
+      sort_order = #{sortOrder,jdbcType=INTEGER},
+      `status` = #{status,jdbcType=BOOLEAN},
+      date_added = #{dateAdded,jdbcType=TIMESTAMP},
+      date_modified = #{dateModified,jdbcType=TIMESTAMP},
+      secondary_image = #{secondaryImage,jdbcType=VARCHAR},
+      alternative_image = #{alternativeImage,jdbcType=VARCHAR},
+      is_featured = #{isFeatured,jdbcType=BOOLEAN}
+    where category_id = #{categoryId,jdbcType=INTEGER}
+  </update>
+</mapper>
