@@ -3,7 +3,7 @@
 <mapper namespace="com.xm.commerce.system.mapper.ecommerce.ProductStoreMapper">
   <resultMap id="BaseResultMap" type="com.xm.commerce.system.entity.ecommerce.ProductStore">
     <!--@mbg.generated-->
-    <!--@Table oc_product_store-->
+    <!--@Table ecommerce_product_store-->
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="product_name" jdbcType="VARCHAR" property="productName" />
     <result column="description" jdbcType="VARCHAR" property="description" />
@@ -28,17 +28,17 @@
     <!--@mbg.generated-->
     select 
     <include refid="Base_Column_List" />
-    from oc_product_store
+    from ecommerce_product_store
     where id = #{id,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     <!--@mbg.generated-->
-    delete from oc_product_store
+    delete from ecommerce_product_store
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.xm.commerce.system.entity.ecommerce.ProductStore" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into oc_product_store (product_name, description, meta_tag_title, 
+    insert into ecommerce_product_store (product_name, description, meta_tag_title, 
       model, sku, category, 
       mpn, price, quantity, 
       image, product_link, product_source, 
@@ -51,7 +51,7 @@
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.xm.commerce.system.entity.ecommerce.ProductStore" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into oc_product_store
+    insert into ecommerce_product_store
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="productName != null">
         product_name,
@@ -137,7 +137,7 @@
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.xm.commerce.system.entity.ecommerce.ProductStore">
     <!--@mbg.generated-->
-    update oc_product_store
+    update ecommerce_product_store
     <set>
       <if test="productName != null">
         product_name = #{productName,jdbcType=VARCHAR},
@@ -183,7 +183,7 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.xm.commerce.system.entity.ecommerce.ProductStore">
     <!--@mbg.generated-->
-    update oc_product_store
+    update ecommerce_product_store
     set product_name = #{productName,jdbcType=VARCHAR},
       description = #{description,jdbcType=VARCHAR},
       meta_tag_title = #{metaTagTitle,jdbcType=VARCHAR},
