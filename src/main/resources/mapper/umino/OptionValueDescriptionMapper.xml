@@ -88,4 +88,10 @@
     where option_value_id = #{optionValueId,jdbcType=INTEGER}
       and language_id = #{languageId,jdbcType=INTEGER}
   </update>
+
+  <select id="selectByNameAndLanguageId" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List"/>
+    FROM oc_option_value_description
+    WHERE language_id = #{languageId} AND name = #{name}
+  </select>
 </mapper>

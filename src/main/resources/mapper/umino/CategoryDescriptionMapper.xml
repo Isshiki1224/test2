@@ -123,4 +123,10 @@
     where category_id = #{categoryId,jdbcType=INTEGER}
       and language_id = #{languageId,jdbcType=INTEGER}
   </update>
+
+  <select id="selectByNameAndLanguageId" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List"/>
+    FROM oc_category_description
+    WHERE language_id = #{languageId} and name = #{name,jdbcType=VARCHAR}
+  </select>
 </mapper>

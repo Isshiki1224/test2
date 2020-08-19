@@ -15,4 +15,6 @@ public interface CategoryDescriptionMapper {
 	int updateByPrimaryKeySelective(CategoryDescription record);
 
 	int updateByPrimaryKey(CategoryDescription record);
+
+    CategoryDescription selectByNameAndLanguageId(@Param("name") String name, @Param("languageId") int languageId);
 }

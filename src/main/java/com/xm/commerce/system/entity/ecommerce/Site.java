@@ -15,52 +15,52 @@ import lombok.ToString;
 @NoArgsConstructor
 public class Site {
     /**
-    * 主键
-    */
+     * 主键
+     */
     private Integer id;
 
     /**
-    * 站点名称
-    */
+     * 站点名称
+     */
     private String siteName;
 
     /**
-    * 站点类型
-    */
+     * 站点类型
+     */
     private Boolean siteCategory;
 
     /**
-    * ip
-    */
+     * ip
+     */
     private String ip;
 
     /**
-    * 域名
-    */
+     * 域名
+     */
     private String domain;
 
     /**
-    * 端口
-    */
+     * 端口
+     */
     private String port;
 
     /**
-    * 账号
-    */
+     * 账号
+     */
     private String account;
 
     /**
-    * 密码
-    */
+     * 密码
+     */
     private String password;
 
     /**
-    * shopify  api
-    */
+     * shopify  api
+     */
     private String api;
 
     /**
-    * opencart token
-    */
+     * opencart token
+     */
     private String userToken;
 }

@@ -16,72 +16,72 @@ import lombok.ToString;
 @NoArgsConstructor
 public class ProductStore {
     /**
-    * 主键
-    */
+     * 主键
+     */
     private Integer id;
 
     /**
-    * 产品名称
-    */
+     * 产品名称
+     */
     private String productName;
 
     /**
-    * 产品描述
-    */
+     * 产品描述
+     */
     private String description;
 
     /**
-    * 标签
-    */
+     * 标签
+     */
     private String metaTagTitle;
 
     /**
-    * model
-    */
+     * model
+     */
     private String model;
 
     /**
-    * SKU
-    */
+     * SKU
+     */
     private String sku;
 
     /**
-    * 谷歌分类
-    */
+     * 谷歌分类
+     */
     private String category;
 
     /**
-    * MPN
-    */
+     * MPN
+     */
     private String mpn;
 
     /**
-    * 价格
-    */
+     * 价格
+     */
     private BigDecimal price;
 
     /**
-    * 库存
-    */
+     * 库存
+     */
     private Integer quantity;
 
     /**
-    * 图片
-    */
+     * 图片
+     */
     private String image;
 
     /**
-    * 产品链接
-    */
+     * 产品链接
+     */
     private String productLink;
 
     /**
-    * 数据来源
-    */
+     * 数据来源
+     */
     private String productSource;
 
     /**
-    * 商品属性
-    */
+     * 商品属性
+     */
     private String productOptions;
 }

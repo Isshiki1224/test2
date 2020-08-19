@@ -15,4 +15,6 @@ public interface OptionDescriptionMapper {
 	int updateByPrimaryKeySelective(OptionDescription record);
 
 	int updateByPrimaryKey(OptionDescription record);
+
+    OptionDescription selectByNameAndLanguageId(@Param("name") String name, @Param("languageId") int languageId);
 }

@@ -1,33 +1,39 @@
-//package com.xm.commerce.system.controller;
-//
-//import com.xm.commerce.system.entity.OcProductStore;
-//import com.xm.commerce.system.entity.request.CategoryRequest;
-//import com.xm.commerce.system.entity.response.ResponseData;
-//import com.xm.commerce.system.ecommerce.service.OcProductStoreService;
-//import org.springframework.web.bind.annotation.PostMapping;
-//import org.springframework.web.bind.annotation.RequestBody;
-//import org.springframework.web.bind.annotation.RestController;
-//
-//import javax.annotation.Resource;
-//
-//@RestController
-//
-//public class ProductController {
-//    @Resource
-//    OcProductStoreService ocProductStoreService;
-//
-//    @PostMapping("/product/add")
-//    public ResponseData addProduct(@RequestBody OcProductStore ocProductStore){
-//        ocProductStoreService.insertSelective(ocProductStore);
-//        return new ResponseData("", 200);
-//    }
-//
-//    @PostMapping("/products")
-//    public ResponseData products(@RequestBody CategoryRequest categoryRequest){
-//        //todo  8.18 分类分页搜索
-//        ocProductStoreService.selectByCategory(categoryRequest);
-//        return new ResponseData("", 200);
-//    }
-//
-//
-//}
+package com.xm.commerce.system.controller;
+
+import com.xm.commerce.system.entity.ecommerce.ProductStore;
+import com.xm.commerce.system.entity.request.CategoryRequest;
+import com.xm.commerce.system.entity.response.ResponseData;
+
+import com.xm.commerce.system.service.ProductStoreService;
+import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
+
+@RestController
+
+public class ProductController {
+    @Resource
+    ProductStoreService productStoreService;
+
+    @PostMapping("/product/add")
+    public ResponseData addProduct(@RequestBody ProductStore productStore){
+        productStoreService.insertSelective(productStore);
+        return new ResponseData("", 200);
+    }
+
+    @GetMapping("/products")
+    public ResponseData products(CategoryRequest categoryRequest) {
+        // todo  8.18 分类分页搜索
+//        productStoreService.selectByCategory(categoryRequest);
+        return new ResponseData("", 200);
+    }
+
+    @GetMapping("/product/{id}")
+    public ResponseData products(@PathVariable Integer id) {
+
+//        productStoreService.selectByCategory(categoryRequest);
+        return new ResponseData("", 200);
+    }
+
+
+}
