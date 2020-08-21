@@ -8,6 +8,7 @@ import com.xm.commerce.system.service.ProductStoreService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @RestController
 
@@ -17,23 +18,40 @@ public class ProductController {
 
     @PostMapping("/product/add")
     public ResponseData addProduct(@RequestBody ProductStore productStore){
-        productStoreService.insertSelective(productStore);
+        if (productStore.getId() == null){
+            productStoreService.insertSelective(productStore);
+        }else{
+            productStoreService.updateByPrimaryKey(productStore);
+        }
         return new ResponseData("", 200);
     }
 
     @GetMapping("/products")
     public ResponseData products(CategoryRequest categoryRequest) {
-        // todo  8.18 分类分页搜索
-//        productStoreService.selectByCategory(categoryRequest);
+        // todo
+        productStoreService.selectByCategory(categoryRequest);
         return new ResponseData("", 200);
     }
 
     @GetMapping("/product/{id}")
-    public ResponseData products(@PathVariable Integer id) {
-
-//        productStoreService.selectByCategory(categoryRequest);
-        return new ResponseData("", 200);
+    public ResponseData getProduct(@PathVariable Integer id) {
+        ProductStore productStore = productStoreService.selectByPrimaryKey(id);
+        return new ResponseData("", 200, productStore);
     }
+
+    @PostMapping("/products")
+    public ResponseData deleteProducts(@RequestBody List<Integer> ids) {
+        productStoreService.deleteByBatch(ids);
+        return new ResponseData("删除成功", 200);
+    }
+
+    @PostMapping("/product/{id}")
+    public ResponseData deleteProduct(@PathVariable Integer id) {
+        productStoreService.deleteByPrimaryKey(id);
+        return new ResponseData("删除成功", 200);
+    }
+
+
 
 
 }

@@ -13,7 +13,7 @@ public class CategoryRequest {
     private Integer minPrice;
     private Integer maxPrice;
     private String productName;
-    private Boolean byAddTime;
-    private Boolean byPrice;
+    private Integer byAddTime;
+    private Integer byPrice;
 
 }

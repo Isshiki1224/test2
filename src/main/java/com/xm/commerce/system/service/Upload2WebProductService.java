@@ -1,21 +1,30 @@
 package com.xm.commerce.system.service;
 
 
+import com.xm.commerce.system.mapper.ecommerce.ProductStoreMapper;
+import com.xm.commerce.system.mapper.ecommerce.SiteMapper;
 import com.xm.commerce.system.model.entity.ecommerce.ProductStore;
+import com.xm.commerce.system.model.entity.ecommerce.Site;
 import com.xm.commerce.system.model.entity.umino.*;
 import com.xm.commerce.system.mapper.umino.*;
 import com.xm.commerce.system.util.DateUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
+@Slf4j
 @Service
 public class Upload2WebProductService {
     @Resource
@@ -42,13 +51,25 @@ public class Upload2WebProductService {
     ProductOptionValueMapper productOptionValueMapper;
     @Resource
     OptionValueDescriptionMapper optionValueDescriptionMapper;
+    @Resource
+    ProductStoreMapper productStoreMapper;
+    @Resource
+    SiteMapper siteMapper;
+    @Resource
+    RestTemplate restTemplate;
+
+    private static final String shopifyUrl = "https://bestrylife.myshopify.com/admin/api/2020-07/products.json";
+    private static final String shopifyToken = "Basic ZDM1MWU0ZDkzNzY1ZmYzNDc1Y2I1MGVjYjM0MDIzYjU6c2hwcGFfYTUyMTdmYTU0YWQ0NWEwN2JhNjVkZWQxN2VhYWJmYzM=";
+    private static final String openCartRedirect = "https://www.asmater.com/admin/index.php?route=common/login";
 
     @SuppressWarnings(value = {"rawtypes"})
     @Transactional(rollbackFor = Exception.class)
-    public boolean upload2OpenCart(Integer id){
+    public boolean upload2OpenCart(Integer id) {
+
+
 
         // todo
-        ProductStore productStore = null;
+        ProductStore productStore = productStoreMapper.selectByPrimaryKey(id);
 
         Integer productId = insertProduct(productStore);
         insertProductDescription(productStore, productId);
@@ -230,6 +251,121 @@ public class Upload2WebProductService {
         productMapper.insert(product);
 
         return product.getProductId();
+    }
+
+    public boolean upload2Shopify(Integer productId) {
+        ProductStore productStore = productStoreMapper.selectByPrimaryKey(productId);
+        String productOptions = productStore.getProductOptions();
+        JSONObject jsonObject = new JSONObject(productOptions);
+        Iterator<String> keys = jsonObject.keys();
+        List<Map<String, Object>> options = new ArrayList<>();
+        while (keys.hasNext()) {
+            String name = keys.next();
+            Object optionsValue = jsonObject.get(name);
+            Map<String, Object> option = new HashMap<>();
+            option.put("name", name);
+            option.put("values", optionsValue);
+            options.add(option);
+        }
+
+        List<Object> lists = new ArrayList<>();
+        options.forEach(map -> lists.addAll(Collections.singletonList(map.get("values"))));
+
+        List<Object> result = getVariantsList(lists);
+
+        List<Map<String, Object>> variants = new ArrayList<>();
+        if (result != null) {
+            Object o = result.get(0);
+            if (o instanceof List<?>) {
+                List<?> array = (ArrayList<?>) o;
+                array.forEach(s -> {
+                    Map<String, Object> variant = new HashMap<>();
+                    Object[] ss = (Object[]) s;
+                    for (int i = 0; i < ss.length; i++) {
+                        variant.put("option" + (i + 1), ss[i]);
+                    }
+                    variant.put("price", productStore.getPrice());
+                    variant.put("inventory_quantity", productStore.getQuantity());
+                    variant.put("sku", productStore.getSku());
+                    variants.add(variant);
+                });
+            }
+        }
+
+        List<Map<String, String>> images = new ArrayList<>();
+        for (String image : productStore.getImage().split(",")) {
+            Map<String, String> temp = new HashMap<>();
+            temp.put("src", image);
+            images.add(temp);
+        }
+
+        Map<String, Map<String, Object>> productParam = new HashMap<>();
+        Map<String, Object> mapParam = new HashMap<>();
+        mapParam.put("title", productStore.getProductName());
+        mapParam.put("body_html", productStore.getDescription());
+        mapParam.put("vendor", "Bestrylife");
+        mapParam.put("product_type", productStore.getCategory());
+        mapParam.put("tags", productStore.getCategory());
+        mapParam.put("images", images);
+        mapParam.put("variants", variants);
+        mapParam.put("options", options);
+        productParam.put("product", mapParam);
+        log.info(productParam.toString());
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        httpHeaders.set("Authorization", shopifyToken);
+        HttpEntity<Map<String, Map<String, Object>>> request = new HttpEntity<>(productParam, httpHeaders);
+        String body = restTemplate.postForEntity(shopifyUrl, request, String.class).getBody();
+        log.info(body);
+        return true;
+    }
+
+    private List<Object> getVariantsList(List<Object> lists) {
+        List<Object> result = new ArrayList<>();
+        if (lists.size() == 0) {
+            return null;
+        } else if (lists.size() == 1) {
+            return lists;
+        } else {
+            JSONArray options1 = (JSONArray) lists.get(0);
+            JSONArray options2 = (JSONArray) lists.get(1);
+            options1.forEach(option1 -> {
+                options2.forEach(option2 -> {
+                    Object[] temp = {option1, option2};
+                    result.add(temp);
+                });
+            });
+            lists.remove(0);
+            lists.remove(0);
+            lists.add(result);
+            return getVariantsList(lists);
+        }
+    }
+
+
+    public boolean uploadPic2OpenCart(Integer siteId){
+
+
+
+        Site site = siteMapper.selectByPrimaryKey(siteId);
+        String domain = site.getDomain();
+//        String url = domain + "?route=common/login";
+        String url = domain + "?route=common/filemanager/upload&directory=Toys&user_token=Ek0QgvIcB0HCLCKhVYrASmaZvSX9EqzU";
+        HttpHeaders httpHeaders = new HttpHeaders();
+
+        httpHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+        MultiValueMap<String, String> loginParam = new LinkedMultiValueMap<>();
+        loginParam.add("username", site.getAccount());
+        loginParam.add("password", site.getPassword());
+        loginParam.add("redirect", openCartRedirect);
+        HttpEntity request = new HttpEntity(loginParam, httpHeaders);
+        String body = restTemplate.postForEntity(url, request, String.class).getBody();
+        log.info(body);
+
+
+        return false;
+
     }
 
 }

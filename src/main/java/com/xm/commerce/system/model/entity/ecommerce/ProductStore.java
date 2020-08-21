@@ -1,6 +1,7 @@
 package com.xm.commerce.system.model.entity.ecommerce;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -84,4 +85,14 @@ public class ProductStore {
      * 商品属性
      */
     private String productOptions;
+
+    /**
+     * 入库时间
+     */
+    private Date dataAdded;
+
+    /**
+     * 修改时间
+     */
+    private Date dataModified;
 }
