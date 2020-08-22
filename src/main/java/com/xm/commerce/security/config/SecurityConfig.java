@@ -60,13 +60,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, AUTH_LOGIN_URL).permitAll()
-                .antMatchers("/share/visit",
-                        "/share/findAllAlbum",
-                        "/share/findByAlbum",
-                        "/swagger-ui.html/**",
-                        "/webjars/**",
+                .antMatchers(
+                        "/swagger-ui/**",
                         "/swagger-resources/**",
-                        "/v2/**").permitAll()
+                        "/v3/**").permitAll()
                 // 指定路径下的资源需要验证了的用户才能访问
                 .antMatchers("/**").authenticated()
                 .and()
