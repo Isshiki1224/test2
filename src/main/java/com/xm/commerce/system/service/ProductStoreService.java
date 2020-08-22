@@ -47,21 +47,23 @@ public class ProductStoreService {
 
     public List<ProductStore> selectByCategory(CategoryRequest categoryRequest) {
         List<ProductStore> productStores = null;
-        if (categoryRequest.getPage() != null && categoryRequest.getPageSize() != null) {
-            PageHelper.startPage(categoryRequest.getPage(), categoryRequest.getPageSize());
-            productStores = productStoreMapper.selectByCategory(categoryRequest);
-        }
+//        if (categoryRequest.getPage() != null && categoryRequest.getPageSize() != null) {
+//            PageHelper.startPage(categoryRequest.getPage(), categoryRequest.getPageSize());
+//            productStores = productStoreMapper.selectByCategory(categoryRequest);
+//        }
+        productStores = productStoreMapper.selectByCategory(categoryRequest);
 
         return productStores;
     }
 
     public int deleteByBatch(List<Integer> ids) {
-        if (ids.isEmpty()){
+        if (ids.isEmpty()) {
             return 0;
         }
         return productStoreMapper.deleteByBatch(ids);
     }
 }
+
 
 
 

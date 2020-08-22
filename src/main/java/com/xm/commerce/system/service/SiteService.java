@@ -4,6 +4,9 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import com.xm.commerce.system.mapper.ecommerce.SiteMapper;
 import com.xm.commerce.system.model.entity.ecommerce.Site;
+
+import java.util.List;
+
 @Service
 public class SiteService{
 
@@ -40,4 +43,7 @@ public class SiteService{
         return siteMapper.updateByPrimaryKey(record);
     }
 
+    public List<Site> selectAll() {
+        return siteMapper.selectAll();
+    }
 }

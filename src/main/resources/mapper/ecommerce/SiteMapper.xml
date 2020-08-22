@@ -152,4 +152,8 @@
       user_token = #{userToken,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, site_name from ecommerce_site
+  </select>
 </mapper>

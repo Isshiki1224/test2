@@ -1,233 +1,268 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.xm.commerce.system.mapper.ecommerce.ProductStoreMapper">
-    <resultMap id="BaseResultMap" type="com.xm.commerce.system.model.entity.ecommerce.ProductStore">
-        <!--@mbg.generated-->
-        <!--@Table ecommerce_product_store-->
-        <id column="id" jdbcType="INTEGER" property="id"/>
-        <result column="product_name" jdbcType="VARCHAR" property="productName"/>
-        <result column="description" jdbcType="VARCHAR" property="description"/>
-        <result column="meta_tag_title" jdbcType="VARCHAR" property="metaTagTitle"/>
-        <result column="model" jdbcType="VARCHAR" property="model"/>
-        <result column="sku" jdbcType="VARCHAR" property="sku"/>
-        <result column="category" jdbcType="VARCHAR" property="category"/>
-        <result column="mpn" jdbcType="VARCHAR" property="mpn"/>
-        <result column="price" jdbcType="DECIMAL" property="price"/>
-        <result column="quantity" jdbcType="INTEGER" property="quantity"/>
-        <result column="image" jdbcType="VARCHAR" property="image"/>
-        <result column="product_link" jdbcType="VARCHAR" property="productLink"/>
-        <result column="product_source" jdbcType="VARCHAR" property="productSource"/>
-        <result column="product_options" jdbcType="VARCHAR" property="productOptions"/>
-        <result column="data_added" jdbcType="TIMESTAMP" property="dataAdded"/>
-        <result column="data_modified" jdbcType="TIMESTAMP" property="dataModified"/>
-    </resultMap>
-    <sql id="Base_Column_List">
-        <!--@mbg.generated-->
-        id, product_name, description, meta_tag_title, model, sku, category, mpn, price,
-        quantity, image, product_link, product_source, product_options, data_added, data_modified
-    </sql>
-    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-        <!--@mbg.generated-->
-        select
-        <include refid="Base_Column_List"/>
-        from ecommerce_product_store
-        where id = #{id,jdbcType=INTEGER}
-    </select>
-    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-        <!--@mbg.generated-->
-        delete
-        from ecommerce_product_store
-        where id = #{id,jdbcType=INTEGER}
-    </delete>
-    <insert id="insert" keyColumn="id" keyProperty="id"
-            parameterType="com.xm.commerce.system.model.entity.ecommerce.ProductStore" useGeneratedKeys="true">
-        <!--@mbg.generated-->
-        insert into ecommerce_product_store (product_name, description, meta_tag_title,
-                                             model, sku, category,
-                                             mpn, price, quantity,
-                                             image, product_link, product_source,
-                                             product_options, data_added, data_modified)
-        values (#{productName,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{metaTagTitle,jdbcType=VARCHAR},
-                #{model,jdbcType=VARCHAR}, #{sku,jdbcType=VARCHAR}, #{category,jdbcType=VARCHAR},
-                #{mpn,jdbcType=VARCHAR}, #{price,jdbcType=DECIMAL}, #{quantity,jdbcType=INTEGER},
-                #{image,jdbcType=VARCHAR}, #{productLink,jdbcType=VARCHAR}, #{productSource,jdbcType=VARCHAR},
-                #{productOptions,jdbcType=VARCHAR}, #{dataAdded,jdbcType=TIMESTAMP}, #{dataModified,jdbcType=TIMESTAMP})
-    </insert>
-    <insert id="insertSelective" keyColumn="id" keyProperty="id"
-            parameterType="com.xm.commerce.system.model.entity.ecommerce.ProductStore" useGeneratedKeys="true">
-        <!--@mbg.generated-->
-        insert into ecommerce_product_store
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="productName != null">
-                product_name,
-            </if>
-            <if test="description != null">
-                description,
-            </if>
-            <if test="metaTagTitle != null">
-                meta_tag_title,
-            </if>
-            <if test="model != null">
-                model,
-            </if>
-            <if test="sku != null">
-                sku,
-            </if>
-            <if test="category != null">
-                category,
-            </if>
-            <if test="mpn != null">
-                mpn,
-            </if>
-            <if test="price != null">
-                price,
-            </if>
-            <if test="quantity != null">
-                quantity,
-            </if>
-            <if test="image != null">
-                image,
-            </if>
-            <if test="productLink != null">
-                product_link,
-            </if>
-            <if test="productSource != null">
-                product_source,
-            </if>
-            <if test="productOptions != null">
-                product_options,
-            </if>
-            <if test="dataAdded != null">
-                data_added,
-            </if>
-            <if test="dataModified != null">
-                data_modified,
-            </if>
-        </trim>
-        <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="productName != null">
-                #{productName,jdbcType=VARCHAR},
-            </if>
-            <if test="description != null">
-                #{description,jdbcType=VARCHAR},
-            </if>
-            <if test="metaTagTitle != null">
-                #{metaTagTitle,jdbcType=VARCHAR},
-            </if>
-            <if test="model != null">
-                #{model,jdbcType=VARCHAR},
-            </if>
-            <if test="sku != null">
-                #{sku,jdbcType=VARCHAR},
-            </if>
-            <if test="category != null">
-                #{category,jdbcType=VARCHAR},
-            </if>
-            <if test="mpn != null">
-                #{mpn,jdbcType=VARCHAR},
-            </if>
-            <if test="price != null">
-                #{price,jdbcType=DECIMAL},
-            </if>
-            <if test="quantity != null">
-                #{quantity,jdbcType=INTEGER},
-            </if>
-            <if test="image != null">
-                #{image,jdbcType=VARCHAR},
-            </if>
-            <if test="productLink != null">
-                #{productLink,jdbcType=VARCHAR},
-            </if>
-            <if test="productSource != null">
-                #{productSource,jdbcType=VARCHAR},
-            </if>
-            <if test="productOptions != null">
-                #{productOptions,jdbcType=VARCHAR},
-            </if>
-            <if test="dataAdded != null">
-                #{dataAdded,jdbcType=TIMESTAMP},
-            </if>
-            <if test="dataModified != null">
-                #{dataModified,jdbcType=TIMESTAMP},
-            </if>
-        </trim>
-    </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="com.xm.commerce.system.model.entity.ecommerce.ProductStore">
-        <!--@mbg.generated-->
-        update ecommerce_product_store
-        <set>
-            <if test="productName != null">
-                product_name = #{productName,jdbcType=VARCHAR},
-            </if>
-            <if test="description != null">
-                description = #{description,jdbcType=VARCHAR},
-            </if>
-            <if test="metaTagTitle != null">
-                meta_tag_title = #{metaTagTitle,jdbcType=VARCHAR},
-            </if>
-            <if test="model != null">
-                model = #{model,jdbcType=VARCHAR},
-            </if>
-            <if test="sku != null">
-                sku = #{sku,jdbcType=VARCHAR},
-            </if>
-            <if test="category != null">
-                category = #{category,jdbcType=VARCHAR},
-            </if>
-            <if test="mpn != null">
-                mpn = #{mpn,jdbcType=VARCHAR},
-            </if>
-            <if test="price != null">
-                price = #{price,jdbcType=DECIMAL},
-            </if>
-            <if test="quantity != null">
-                quantity = #{quantity,jdbcType=INTEGER},
-            </if>
-            <if test="image != null">
-                image = #{image,jdbcType=VARCHAR},
-            </if>
-            <if test="productLink != null">
-                product_link = #{productLink,jdbcType=VARCHAR},
-            </if>
-            <if test="productSource != null">
-                product_source = #{productSource,jdbcType=VARCHAR},
-            </if>
-            <if test="productOptions != null">
-                product_options = #{productOptions,jdbcType=VARCHAR},
-            </if>
-            <if test="dataAdded != null">
-                data_added = #{dataAdded,jdbcType=TIMESTAMP},
-            </if>
-            <if test="dataModified != null">
-                data_modified = #{dataModified,jdbcType=TIMESTAMP},
-            </if>
-        </set>
-        where id = #{id,jdbcType=INTEGER}
-    </update>
-    <update id="updateByPrimaryKey" parameterType="com.xm.commerce.system.model.entity.ecommerce.ProductStore">
-        <!--@mbg.generated-->
-        update ecommerce_product_store
-        set product_name    = #{productName,jdbcType=VARCHAR},
-            description     = #{description,jdbcType=VARCHAR},
-            meta_tag_title  = #{metaTagTitle,jdbcType=VARCHAR},
-            model           = #{model,jdbcType=VARCHAR},
-            sku             = #{sku,jdbcType=VARCHAR},
-            category        = #{category,jdbcType=VARCHAR},
-            mpn             = #{mpn,jdbcType=VARCHAR},
-            price           = #{price,jdbcType=DECIMAL},
-            quantity        = #{quantity,jdbcType=INTEGER},
-            image           = #{image,jdbcType=VARCHAR},
-            product_link    = #{productLink,jdbcType=VARCHAR},
-            product_source  = #{productSource,jdbcType=VARCHAR},
-            product_options = #{productOptions,jdbcType=VARCHAR},
-            data_added      = #{dataAdded,jdbcType=TIMESTAMP},
-            data_modified   = #{dataModified,jdbcType=TIMESTAMP}
-        where id = #{id,jdbcType=INTEGER}
-    </update>
+  <resultMap id="BaseResultMap" type="com.xm.commerce.system.model.entity.ecommerce.ProductStore">
+    <!--@mbg.generated-->
+    <!--@Table ecommerce_product_store-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="product_name" jdbcType="VARCHAR" property="productName" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="meta_tag_title" jdbcType="VARCHAR" property="metaTagTitle" />
+    <result column="model" jdbcType="VARCHAR" property="model" />
+    <result column="sku" jdbcType="VARCHAR" property="sku" />
+    <result column="category" jdbcType="VARCHAR" property="category" />
+    <result column="mpn" jdbcType="VARCHAR" property="mpn" />
+    <result column="price" jdbcType="DECIMAL" property="price" />
+    <result column="quantity" jdbcType="INTEGER" property="quantity" />
+    <result column="image" jdbcType="VARCHAR" property="image" />
+    <result column="product_link" jdbcType="VARCHAR" property="productLink" />
+    <result column="product_source" jdbcType="VARCHAR" property="productSource" />
+    <result column="product_options" jdbcType="VARCHAR" property="productOptions" />
+    <result column="data_added" jdbcType="TIMESTAMP" property="dataAdded" />
+    <result column="data_modified" jdbcType="TIMESTAMP" property="dataModified" />
+    <result column="upload_shopify" jdbcType="BOOLEAN" property="uploadShopify" />
+    <result column="upload_opencart" jdbcType="BOOLEAN" property="uploadOpencart" />
+    <result column="upload_by" jdbcType="INTEGER" property="uploadBy" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, product_name, description, meta_tag_title, model, sku, category, mpn, price, 
+    quantity, image, product_link, product_source, product_options, data_added, data_modified, 
+    upload_shopify, upload_opencart, upload_by
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from ecommerce_product_store
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <!--@mbg.generated-->
+    delete from ecommerce_product_store
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.xm.commerce.system.model.entity.ecommerce.ProductStore" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into ecommerce_product_store (product_name, description, meta_tag_title, 
+      model, sku, category, 
+      mpn, price, quantity, 
+      image, product_link, product_source, 
+      product_options, data_added, data_modified, 
+      upload_shopify, upload_opencart, upload_by
+      )
+    values (#{productName,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{metaTagTitle,jdbcType=VARCHAR}, 
+      #{model,jdbcType=VARCHAR}, #{sku,jdbcType=VARCHAR}, #{category,jdbcType=VARCHAR}, 
+      #{mpn,jdbcType=VARCHAR}, #{price,jdbcType=DECIMAL}, #{quantity,jdbcType=INTEGER}, 
+      #{image,jdbcType=VARCHAR}, #{productLink,jdbcType=VARCHAR}, #{productSource,jdbcType=VARCHAR}, 
+      #{productOptions,jdbcType=VARCHAR}, #{dataAdded,jdbcType=TIMESTAMP}, #{dataModified,jdbcType=TIMESTAMP}, 
+      #{uploadShopify,jdbcType=BOOLEAN}, #{uploadOpencart,jdbcType=BOOLEAN}, #{uploadBy,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.xm.commerce.system.model.entity.ecommerce.ProductStore" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into ecommerce_product_store
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="productName != null">
+        product_name,
+      </if>
+      <if test="description != null">
+        description,
+      </if>
+      <if test="metaTagTitle != null">
+        meta_tag_title,
+      </if>
+      <if test="model != null">
+        model,
+      </if>
+      <if test="sku != null">
+        sku,
+      </if>
+      <if test="category != null">
+        category,
+      </if>
+      <if test="mpn != null">
+        mpn,
+      </if>
+      <if test="price != null">
+        price,
+      </if>
+      <if test="quantity != null">
+        quantity,
+      </if>
+      <if test="image != null">
+        image,
+      </if>
+      <if test="productLink != null">
+        product_link,
+      </if>
+      <if test="productSource != null">
+        product_source,
+      </if>
+      <if test="productOptions != null">
+        product_options,
+      </if>
+      <if test="dataAdded != null">
+        data_added,
+      </if>
+      <if test="dataModified != null">
+        data_modified,
+      </if>
+      <if test="uploadShopify != null">
+        upload_shopify,
+      </if>
+      <if test="uploadOpencart != null">
+        upload_opencart,
+      </if>
+      <if test="uploadBy != null">
+        upload_by,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="productName != null">
+        #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="metaTagTitle != null">
+        #{metaTagTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="model != null">
+        #{model,jdbcType=VARCHAR},
+      </if>
+      <if test="sku != null">
+        #{sku,jdbcType=VARCHAR},
+      </if>
+      <if test="category != null">
+        #{category,jdbcType=VARCHAR},
+      </if>
+      <if test="mpn != null">
+        #{mpn,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null">
+        #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="quantity != null">
+        #{quantity,jdbcType=INTEGER},
+      </if>
+      <if test="image != null">
+        #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="productLink != null">
+        #{productLink,jdbcType=VARCHAR},
+      </if>
+      <if test="productSource != null">
+        #{productSource,jdbcType=VARCHAR},
+      </if>
+      <if test="productOptions != null">
+        #{productOptions,jdbcType=VARCHAR},
+      </if>
+      <if test="dataAdded != null">
+        #{dataAdded,jdbcType=TIMESTAMP},
+      </if>
+      <if test="dataModified != null">
+        #{dataModified,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uploadShopify != null">
+        #{uploadShopify,jdbcType=BOOLEAN},
+      </if>
+      <if test="uploadOpencart != null">
+        #{uploadOpencart,jdbcType=BOOLEAN},
+      </if>
+      <if test="uploadBy != null">
+        #{uploadBy,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xm.commerce.system.model.entity.ecommerce.ProductStore">
+    <!--@mbg.generated-->
+    update ecommerce_product_store
+    <set>
+      <if test="productName != null">
+        product_name = #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="metaTagTitle != null">
+        meta_tag_title = #{metaTagTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="model != null">
+        model = #{model,jdbcType=VARCHAR},
+      </if>
+      <if test="sku != null">
+        sku = #{sku,jdbcType=VARCHAR},
+      </if>
+      <if test="category != null">
+        category = #{category,jdbcType=VARCHAR},
+      </if>
+      <if test="mpn != null">
+        mpn = #{mpn,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null">
+        price = #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="quantity != null">
+        quantity = #{quantity,jdbcType=INTEGER},
+      </if>
+      <if test="image != null">
+        image = #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="productLink != null">
+        product_link = #{productLink,jdbcType=VARCHAR},
+      </if>
+      <if test="productSource != null">
+        product_source = #{productSource,jdbcType=VARCHAR},
+      </if>
+      <if test="productOptions != null">
+        product_options = #{productOptions,jdbcType=VARCHAR},
+      </if>
+      <if test="dataAdded != null">
+        data_added = #{dataAdded,jdbcType=TIMESTAMP},
+      </if>
+      <if test="dataModified != null">
+        data_modified = #{dataModified,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uploadShopify != null">
+        upload_shopify = #{uploadShopify,jdbcType=BOOLEAN},
+      </if>
+      <if test="uploadOpencart != null">
+        upload_opencart = #{uploadOpencart,jdbcType=BOOLEAN},
+      </if>
+      <if test="uploadBy != null">
+        upload_by = #{uploadBy,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xm.commerce.system.model.entity.ecommerce.ProductStore">
+    <!--@mbg.generated-->
+    update ecommerce_product_store
+    set product_name = #{productName,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      meta_tag_title = #{metaTagTitle,jdbcType=VARCHAR},
+      model = #{model,jdbcType=VARCHAR},
+      sku = #{sku,jdbcType=VARCHAR},
+      category = #{category,jdbcType=VARCHAR},
+      mpn = #{mpn,jdbcType=VARCHAR},
+      price = #{price,jdbcType=DECIMAL},
+      quantity = #{quantity,jdbcType=INTEGER},
+      image = #{image,jdbcType=VARCHAR},
+      product_link = #{productLink,jdbcType=VARCHAR},
+      product_source = #{productSource,jdbcType=VARCHAR},
+      product_options = #{productOptions,jdbcType=VARCHAR},
+      data_added = #{dataAdded,jdbcType=TIMESTAMP},
+      data_modified = #{dataModified,jdbcType=TIMESTAMP},
+      upload_shopify = #{uploadShopify,jdbcType=BOOLEAN},
+      upload_opencart = #{uploadOpencart,jdbcType=BOOLEAN},
+      upload_by = #{uploadBy,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
 
     <select id="selectByCategory" resultMap="BaseResultMap">
         select
-        <include refid="Base_Column_List"/>
+        <include refid="Base_Column_List" />
         from ecommerce_product_store
         <where>
             <if test="productName != null and productName != ''">
@@ -241,6 +276,7 @@
             <if test="maxPrice != null and minPrice != null">
                 and  price between #{minPrice} and #{maxPrice}
             </if>
+          and (upload_opencart = false or upload_shopify = false)
         </where>
         <if test="byAddTime != null and byPrice != null ">
              order by data_added
@@ -257,7 +293,7 @@
     <delete id="deleteByBatch">
         delete from ecommerce_product_store
         where id in
-        <foreach collection="ids" item="id" open= "(" separator="," close=")">
+        <foreach close=")" collection="ids" item="id" open="(" separator=",">
             #{id}
         </foreach>
     </delete>

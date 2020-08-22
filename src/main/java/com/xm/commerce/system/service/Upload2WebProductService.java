@@ -1,27 +1,38 @@
 package com.xm.commerce.system.service;
 
 
+import com.xm.commerce.system.exception.CreateFolderException;
+import com.xm.commerce.system.exception.CurrentUserException;
+import com.xm.commerce.system.exception.FileUploadException;
 import com.xm.commerce.system.mapper.ecommerce.ProductStoreMapper;
 import com.xm.commerce.system.mapper.ecommerce.SiteMapper;
 import com.xm.commerce.system.model.entity.ecommerce.ProductStore;
 import com.xm.commerce.system.model.entity.ecommerce.Site;
 import com.xm.commerce.system.model.entity.umino.*;
 import com.xm.commerce.system.mapper.umino.*;
+import com.xm.commerce.system.model.request.Upload2OpenCartRequest;
 import com.xm.commerce.system.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
+import java.io.*;
 import java.math.BigDecimal;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
 import java.util.*;
 
 @Slf4j
@@ -58,18 +69,16 @@ public class Upload2WebProductService {
     @Resource
     RestTemplate restTemplate;
 
-    private static final String shopifyUrl = "https://bestrylife.myshopify.com/admin/api/2020-07/products.json";
-    private static final String shopifyToken = "Basic ZDM1MWU0ZDkzNzY1ZmYzNDc1Y2I1MGVjYjM0MDIzYjU6c2hwcGFfYTUyMTdmYTU0YWQ0NWEwN2JhNjVkZWQxN2VhYWJmYzM=";
-    private static final String openCartRedirect = "https://www.asmater.com/admin/index.php?route=common/login";
+    private static final String SHOPIFY_URL = "https://bestrylife.myshopify.com/admin/api/2020-07/products.json";
+    private static final String SHOPIFY_TOKEN = "Basic ZDM1MWU0ZDkzNzY1ZmYzNDc1Y2I1MGVjYjM0MDIzYjU6c2hwcGFfYTUyMTdmYTU0YWQ0NWEwN2JhNjVkZWQxN2VhYWJmYzM=";
+    private static final String OPEN_CART_REDIRECT = "https://www.asmater.com/admin/index.php?route=common/login";
+    private static final String DIRECTORY_NOT_EXIST = "Warning: Directory does not exist!";
 
     @SuppressWarnings(value = {"rawtypes"})
     @Transactional(rollbackFor = Exception.class)
-    public boolean upload2OpenCart(Integer id) {
-
-
+    public boolean upload2OpenCart(ProductStore productStore) {
 
         // todo
-        ProductStore productStore = productStoreMapper.selectByPrimaryKey(id);
 
         Integer productId = insertProduct(productStore);
         insertProductDescription(productStore, productId);
@@ -102,7 +111,6 @@ public class Upload2WebProductService {
                 Integer optionId = optionDescription.getOptionId();
                 productToOptionValue(productStore, productId, optionValueArray, optionId);
             }
-
         }
 
 
@@ -203,11 +211,17 @@ public class Upload2WebProductService {
                     .build();
             categoryDescriptionMapper.insert(categoryDescription);
         } else {
+            String[] tempCategory = categoryDescription.getName().split(">");
+            for (String s : tempCategory) {
+                CategoryDescription categoryDescription1 = categoryDescriptionMapper.selectByNameAndLanguageId(s, 1);
+            }
             productToCategoryMapper.insertSelective(new ProductToCategory(productId, categoryDescription.getCategoryId()));
         }
     }
 
     private void insertProductImage(ProductStore ProductStore, Integer productId) {
+
+        //todo  改成IDurl 形式参数
         String imageStr = ProductStore.getImage();
         String[] split = imageStr.split(",");
         List<String> images = Arrays.asList(split);
@@ -240,16 +254,35 @@ public class Upload2WebProductService {
         Product product = Product.builder()
                 .model(productStore.getModel())
                 .sku(productStore.getSku())
+                .upc("")
+                .ean("")
+                .jan("")
                 .mpn(productStore.getMpn())
+                .location("")
                 .quantity(productStore.getQuantity())
+                .stockStatusId(6)
+                .image(productStore.getImage().split(",")[0])
                 .price(productStore.getPrice())
                 .manufacturerId(0)
+                .shipping(true)
+                .points(0)
                 .taxClassId(0)
+                .dateAvailable(DateUtil.dateNow())
+                .weight(BigDecimal.valueOf(0))
+                .weightClassId(1)
+                .length(BigDecimal.valueOf(0))
+                .width(BigDecimal.valueOf(0))
+                .height(BigDecimal.valueOf(0))
+                .lengthClassId(0)
+                .subtract(true)
+                .minimum(1)
+                .sortOrder(0)
                 .status(true)
-                .stockStatusId(7)
+                .viewed(0)
+                .dateAdded(DateUtil.dateNow())
+                .dateModified(DateUtil.dateNow())
                 .build();
         productMapper.insert(product);
-
         return product.getProductId();
     }
 
@@ -314,9 +347,9 @@ public class Upload2WebProductService {
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        httpHeaders.set("Authorization", shopifyToken);
+        httpHeaders.set("Authorization", SHOPIFY_TOKEN);
         HttpEntity<Map<String, Map<String, Object>>> request = new HttpEntity<>(productParam, httpHeaders);
-        String body = restTemplate.postForEntity(shopifyUrl, request, String.class).getBody();
+        String body = restTemplate.postForEntity(SHOPIFY_URL, request, String.class).getBody();
         log.info(body);
         return true;
     }
@@ -330,12 +363,10 @@ public class Upload2WebProductService {
         } else {
             JSONArray options1 = (JSONArray) lists.get(0);
             JSONArray options2 = (JSONArray) lists.get(1);
-            options1.forEach(option1 -> {
-                options2.forEach(option2 -> {
-                    Object[] temp = {option1, option2};
-                    result.add(temp);
-                });
-            });
+            options1.forEach(option1 -> options2.forEach(option2 -> {
+                Object[] temp = {option1, option2};
+                result.add(temp);
+            }));
             lists.remove(0);
             lists.remove(0);
             lists.add(result);
@@ -344,28 +375,165 @@ public class Upload2WebProductService {
     }
 
 
-    public boolean uploadPic2OpenCart(Integer siteId){
+    public ProductStore uploadPic2OpenCart(Upload2OpenCartRequest upload2OpenCartRequest, Map<String, Object> tokenAndCookies) throws IOException {
 
-
-
+        Integer productId = upload2OpenCartRequest.getProductId();
+        Integer siteId = upload2OpenCartRequest.getSiteId();
+        ProductStore productStore = productStoreMapper.selectByPrimaryKey(productId);
         Site site = siteMapper.selectByPrimaryKey(siteId);
         String domain = site.getDomain();
-//        String url = domain + "?route=common/login";
-        String url = domain + "?route=common/filemanager/upload&directory=Toys&user_token=Ek0QgvIcB0HCLCKhVYrASmaZvSX9EqzU";
+        String directory = site.getSiteName();
+        String url = domain + "?route=common/filemanager/upload&user_token=" + tokenAndCookies.get("token") + "&directory=" + directory;
+        String createDirectory = domain + "?route=common/filemanager/folder&user_token=" + tokenAndCookies.get("token") + "&directory=";
+        String cookie = "";
+        if (tokenAndCookies.get("Cookie") instanceof List<?>) {
+            List<?> cookies = (List<?>) tokenAndCookies.get("Cookie");
+            StringBuilder stringBuilder = new StringBuilder();
+            cookies.forEach(o -> stringBuilder.append(o).append("; "));
+            log.info(stringBuilder.toString());
+            cookie = stringBuilder.toString().substring(0, stringBuilder.toString().lastIndexOf("; "));
+            log.info(cookie);
+        }
         HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.set("Cookie", cookie);
+        httpHeaders.set("content-type", "multipart/form-data; boundary=----WebKitFormBoundaryz3cn3BLSkyswVbLY");
+        httpHeaders.set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36");
+        httpHeaders.set("accept", "application/json, text/javascript, */*; q=0.01");
 
-        httpHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
-        MultiValueMap<String, String> loginParam = new LinkedMultiValueMap<>();
-        loginParam.add("username", site.getAccount());
-        loginParam.add("password", site.getPassword());
-        loginParam.add("redirect", openCartRedirect);
-        HttpEntity request = new HttpEntity(loginParam, httpHeaders);
+        MultiValueMap<String, Object> uploadParam = new LinkedMultiValueMap<>();
+        String image = productStore.getImage();
+        StringBuilder sb = new StringBuilder();
+        String tempDir = "temp" + System.currentTimeMillis();
+        try {
+            for (String s : image.split(",")) {
+                uploadAndCreated(url, httpHeaders, uploadParam, tempDir, s, sb);
+            }
+            productStore.setImage(sb.toString().substring(0, sb.toString().lastIndexOf(",")));
+        } finally {
+            File file = new File(System.getProperty("java.io.tmpdir") + File.separator + tempDir);
+            if (file.exists()) {
+                deleteFolder(file);
+            }
+        }
+        return productStore;
+    }
+
+    private void uploadAndCreated(String url, HttpHeaders httpHeaders, MultiValueMap<String, Object> uploadParam, String tempDir, String s, StringBuilder sb) throws IOException {
+        uploadParam.add("file[]", imageUrl2FSR(s, tempDir));
+        HttpEntity request = new HttpEntity(uploadParam, httpHeaders);
         String body = restTemplate.postForEntity(url, request, String.class).getBody();
-        log.info(body);
+        if (body != null) {
+            log.info(body);
+            try {
+                JSONObject jsonObject = new JSONObject(body);
+                boolean success = jsonObject.has("success");
+                if (!success) {
+//                    if (DIRECTORY_NOT_EXIST.equals(jsonObject.get("error"))){
+//                        log.info("directory不存在，尝试创建文件夹");
+//                        MultiValueMap<String, Object> directoryParam = new LinkedMultiValueMap<>();
+//                        directoryParam.add("folder", directory);
+//                        HttpEntity<MultiValueMap<String, Object>> folderRequest = new HttpEntity<>(directoryParam, httpHeaders);
+//                        String folderBody = restTemplate.postForEntity(createDirectory, folderRequest, String.class).getBody();
+//                        JSONObject folderJson = new JSONObject(folderBody);
+//                        boolean isCreated = folderJson.has("success");
+//                        if (folderBody != null){
+//                            if (!isCreated){
+//                                log.info("文件夹创建失败");
+//                                throw new CreateFolderException();
+//                            }
+//                            log.info("文件夹创建成功，尝试上传图片");
+//                            uploadAndCreated(directory, url, createDirectory, httpHeaders, uploadParam, tempDir, s);
+//                        }
+//                    } else{
+//                        log.info("图片上传失败");
+//                        throw new FileUploadException();
+//                    }
+                    log.info("图片上传失败");
+                    throw new FileUploadException();
+                }
+                log.info("图片上传成功");
+                sb.append("catalog/").append(s).append(",");
+            } catch (Exception e) {
+                log.info("图片上传失败");
+                throw new FileUploadException();
+            }
+        }
+    }
 
+    private void deleteFolder(File file) {
+        File[] files = file.listFiles();
+        if (files != null) {
+            for (File temp : files) {
+                if (file.isDirectory()) {
+                    deleteFolder(temp);
+                } else {
+                    boolean delete = file.delete();
+                    log.info("内部文件删除" + (delete ? "成功" : "失败"));
+                }
+            }
+        }
+        boolean delete = file.delete();
+        log.info("临时目录{" + file.getPath() + "}删除" + (delete ? "成功" : "失败"));
+    }
 
-        return false;
+    public static FileSystemResource imageUrl2FSR(String path, String tempDir) throws IOException {
+        HttpURLConnection httpUrl = (HttpURLConnection) new URL(path).openConnection();
+        httpUrl.connect();
+        try (InputStream ins = httpUrl.getInputStream()) {
+            File file = new File(System.getProperty("java.io.tmpdir") + File.separator + tempDir + File.separator + path.substring(path.lastIndexOf("/")));
+            if (!file.getParentFile().exists()) {
+                boolean mkdir = file.getParentFile().mkdir();
+                log.info("临时文件目录{" + file.getPath() + "}创建" + (mkdir ? "成功" : "失败"));
+            }
+            if (file.exists()) {
+                return new FileSystemResource(file);
+            }
+            try (OutputStream os = new FileOutputStream(file)) {
+                int bytesRead;
+                int len = 8192;
+                byte[] buffer = new byte[len];
+                while ((bytesRead = ins.read(buffer, 0, len)) != -1) {
+                    os.write(buffer, 0, bytesRead);
+                }
+            }
+            return new FileSystemResource(file);
+        }
 
     }
 
+    public Map<String, Object> login2OpenCart(Upload2OpenCartRequest upload2OpenCartRequest) {
+
+        Integer siteId = upload2OpenCartRequest.getSiteId();
+        Site site = siteMapper.selectByPrimaryKey(siteId);
+        String domain = site.getDomain();
+        String url = domain + "?route=common/login";
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.set("content-type", "multipart/form-data; boundary=----WebKitFormBoundaryz3cn3BLSkyswVbLY");
+        httpHeaders.set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36");
+        httpHeaders.set("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
+
+        MultiValueMap<String, String> loginParam = new LinkedMultiValueMap<>();
+        loginParam.add("username", site.getAccount());
+        loginParam.add("password", site.getPassword());
+        loginParam.add("redirect", OPEN_CART_REDIRECT);
+
+        HttpEntity request = new HttpEntity(loginParam, httpHeaders);
+        ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
+        URI location = response.getHeaders().getLocation();
+        List<String> cookie = response.getHeaders().get("Set-Cookie");
+        String token;
+        HashMap<String, Object> result = new HashMap<>();
+        if (location != null && cookie != null) {
+            log.info("登陆成功");
+            String path = location.toString();
+            token = path.substring(path.lastIndexOf("user_token=") + "user_token=".length());
+            log.info(token);
+            log.info(cookie.toString());
+            result.put("token", token);
+            result.put("Cookie", cookie);
+        } else {
+            throw new CurrentUserException();
+        }
+        return result;
+    }
 }

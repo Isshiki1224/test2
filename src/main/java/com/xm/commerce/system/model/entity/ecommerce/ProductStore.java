@@ -95,4 +95,19 @@ public class ProductStore {
      * 修改时间
      */
     private Date dataModified;
+
+    /**
+     * 上传到shopify
+     */
+    private Boolean uploadShopify;
+
+    /**
+     * 上传到opencart
+     */
+    private Boolean uploadOpencart;
+
+    /**
+     * 上传者
+     */
+    private Integer uploadBy;
 }

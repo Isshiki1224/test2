@@ -28,9 +28,9 @@ public class ProductController {
 
     @GetMapping("/products")
     public ResponseData products(CategoryRequest categoryRequest) {
-        // todo
-        productStoreService.selectByCategory(categoryRequest);
-        return new ResponseData("", 200);
+        // todo 分页
+        List<ProductStore> productStores = productStoreService.selectByCategory(categoryRequest);
+        return new ResponseData("", 200, productStores);
     }
 
     @GetMapping("/product/{id}")

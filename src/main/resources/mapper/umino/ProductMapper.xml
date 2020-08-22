@@ -67,9 +67,9 @@
       length_class_id, subtract, minimum, 
       sort_order, `status`, viewed, 
       date_added, date_modified)
-    values (#{model,jdbcType=VARCHAR}, #{sku,jdbcType=VARCHAR}, #{upc,jdbcType=VARCHAR}, 
-      #{ean,jdbcType=VARCHAR}, #{jan,jdbcType=VARCHAR}, #{isbn,jdbcType=VARCHAR}, #{mpn,jdbcType=VARCHAR}, 
-      #{location,jdbcType=VARCHAR}, #{quantity,jdbcType=INTEGER}, #{stockStatusId,jdbcType=INTEGER}, 
+    values (#{model,jdbcType=VARCHAR}, #{sku,jdbcType=VARCHAR}, #{upc,jdbcType=VARCHAR},
+      #{ean,jdbcType=VARCHAR}, #{jan,jdbcType=VARCHAR}, #{isbn,jdbcType=VARCHAR}, #{mpn,jdbcType=VARCHAR},
+      #{location,jdbcType=VARCHAR}, #{quantity,jdbcType=INTEGER}, #{stockStatusId,jdbcType=INTEGER},
       #{image,jdbcType=VARCHAR}, #{manufacturerId,jdbcType=INTEGER}, #{shipping,jdbcType=BOOLEAN}, 
       #{price,jdbcType=DECIMAL}, #{points,jdbcType=INTEGER}, #{taxClassId,jdbcType=INTEGER}, 
       #{dateAvailable,jdbcType=DATE}, #{weight,jdbcType=DECIMAL}, #{weightClassId,jdbcType=INTEGER}, 
