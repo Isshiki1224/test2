@@ -1,4 +1,4 @@
-package com.xm.commerce.system.configuration;
+package com.xm.commerce.common.config;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;

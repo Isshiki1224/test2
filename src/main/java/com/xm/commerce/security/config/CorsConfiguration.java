@@ -1,4 +1,4 @@
-package com.xm.commerce.system.configuration;
+package com.xm.commerce.security.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

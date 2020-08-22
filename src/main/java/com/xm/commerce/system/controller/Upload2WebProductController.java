@@ -1,6 +1,7 @@
 package com.xm.commerce.system.controller;
 
 import com.xm.commerce.system.model.request.Upload2OpenCartRequest;
+import com.xm.commerce.system.model.response.ResponseCode;
 import com.xm.commerce.system.model.response.ResponseData;
 import com.xm.commerce.system.service.Upload2WebProductService;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class Upload2WebProductController {
     public ResponseData upload2OpenCart(@RequestBody Upload2OpenCartRequest upload2OpenCartRequest) {
         boolean b = upload2WebProductService.uploadPic2OpenCart(upload2OpenCartRequest.getSiteId());
 //        boolean result = upload2WebProductService.upload2OpenCart(upload2OpenCartRequest.getProductId());
-        return new ResponseData();
+        return new ResponseData("", ResponseCode.SUCCESS);
     }
 
     /**
@@ -29,7 +30,7 @@ public class Upload2WebProductController {
     @PostMapping("/toShopify/{productId}")
     public ResponseData upload2Shopify(@PathVariable Integer productId) {
         boolean result = upload2WebProductService.upload2Shopify(productId);
-        return new ResponseData();
+        return new ResponseData("", ResponseCode.SUCCESS);
     }
 
 }

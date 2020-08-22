@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xm.commerce.system.mapper.ecommerce.CategorieMapper">
+  <resultMap id="BaseResultMap" type="com.xm.commerce.system.model.entity.ecommerce.Categorie">
+    <!--@mbg.generated-->
+    <!--@Table ecommerce_category-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="parent_id" jdbcType="INTEGER" property="parentId" />
+    <result column="detail" jdbcType="VARCHAR" property="detail" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, `name`, parent_id, detail
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from ecommerce_category
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <!--@mbg.generated-->
+    delete from ecommerce_category
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.xm.commerce.system.model.entity.ecommerce.Categorie" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into ecommerce_category (`name`, parent_id, detail
+      )
+    values (#{name,jdbcType=VARCHAR}, #{parentId,jdbcType=INTEGER}, #{detail,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.xm.commerce.system.model.entity.ecommerce.Categorie" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into ecommerce_category
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="name != null">
+        `name`,
+      </if>
+      <if test="parentId != null">
+        parent_id,
+      </if>
+      <if test="detail != null">
+        detail,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null">
+        #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="detail != null">
+        #{detail,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xm.commerce.system.model.entity.ecommerce.Categorie">
+    <!--@mbg.generated-->
+    update ecommerce_category
+    <set>
+      <if test="name != null">
+        `name` = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null">
+        parent_id = #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="detail != null">
+        detail = #{detail,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xm.commerce.system.model.entity.ecommerce.Categorie">
+    <!--@mbg.generated-->
+    update ecommerce_category
+    set `name` = #{name,jdbcType=VARCHAR},
+      parent_id = #{parentId,jdbcType=INTEGER},
+      detail = #{detail,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="findCategorieByName" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List"/>
+    FROM ecommerce_category
+    WHERE name = #{name}
+  </select>
+</mapper>

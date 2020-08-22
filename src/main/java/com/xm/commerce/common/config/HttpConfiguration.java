@@ -1,4 +1,4 @@
-package com.xm.commerce.system.configuration;
+package com.xm.commerce.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

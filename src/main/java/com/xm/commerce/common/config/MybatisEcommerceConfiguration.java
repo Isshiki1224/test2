@@ -1,4 +1,4 @@
-package com.xm.commerce.system.configuration;
+package com.xm.commerce.common.config;
 
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
