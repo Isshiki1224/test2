@@ -8,7 +8,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
 public class ResponseData {
 
     public String msg;
@@ -20,4 +19,9 @@ public class ResponseData {
         this.statusCode = statusCode;
     }
 
+    public ResponseData(int statusCode, Object data) {
+        this.msg = "";
+        this.statusCode = statusCode;
+        this.data = data;
+    }
 }
