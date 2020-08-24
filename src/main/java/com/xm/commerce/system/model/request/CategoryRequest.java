@@ -1,5 +1,6 @@
 package com.xm.commerce.system.model.request;
 
+import com.sun.istack.internal.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 

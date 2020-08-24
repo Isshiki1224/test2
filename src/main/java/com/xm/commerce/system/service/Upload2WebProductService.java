@@ -1,25 +1,24 @@
 package com.xm.commerce.system.service;
 
 
-import com.xm.commerce.system.exception.CreateFolderException;
-import com.xm.commerce.system.exception.CurrentUserException;
-import com.xm.commerce.system.exception.FileUploadException;
+import com.google.common.collect.ImmutableMap;
+import com.xm.commerce.system.exception.*;
+import com.xm.commerce.system.mapper.ecommerce.CategorieMapper;
 import com.xm.commerce.system.mapper.ecommerce.ProductStoreMapper;
 import com.xm.commerce.system.mapper.ecommerce.SiteMapper;
+import com.xm.commerce.system.model.entity.ecommerce.Categorie;
 import com.xm.commerce.system.model.entity.ecommerce.ProductStore;
 import com.xm.commerce.system.model.entity.ecommerce.Site;
+import com.xm.commerce.system.model.entity.ecommerce.User;
 import com.xm.commerce.system.model.entity.umino.*;
 import com.xm.commerce.system.mapper.umino.*;
-import com.xm.commerce.system.model.request.Upload2OpenCartRequest;
+import com.xm.commerce.system.model.request.UploadRequest;
 import com.xm.commerce.system.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,6 +66,8 @@ public class Upload2WebProductService {
     @Resource
     SiteMapper siteMapper;
     @Resource
+    CategorieMapper categorieMapper;
+    @Resource
     RestTemplate restTemplate;
 
     private static final String SHOPIFY_URL = "https://bestrylife.myshopify.com/admin/api/2020-07/products.json";
@@ -76,14 +77,14 @@ public class Upload2WebProductService {
 
     @SuppressWarnings(value = {"rawtypes"})
     @Transactional(rollbackFor = Exception.class)
-    public boolean upload2OpenCart(ProductStore productStore) {
+    public boolean upload2OpenCart(ProductStore productStore, User currentUser) {
 
         // todo
 
         Integer productId = insertProduct(productStore);
         insertProductDescription(productStore, productId);
         insertProductImage(productStore, productId);
-        insertCategory(productStore, productId);
+        insertCategorie(productStore, productId);
 
         String options = productStore.getProductOptions();
         JSONObject jsonObject = new JSONObject(options);
@@ -112,7 +113,11 @@ public class Upload2WebProductService {
                 productToOptionValue(productStore, productId, optionValueArray, optionId);
             }
         }
-
+        productStoreMapper.updateByPrimaryKeySelective(ProductStore.builder()
+                .id(productId)
+                .uploadOpencartBy(currentUser.getId())
+                .uploadOpencart(true)
+                .build());
 
         return true;
     }
@@ -183,8 +188,25 @@ public class Upload2WebProductService {
         productOptionValueMapper.insert(productOptionValue);
     }
 
-    private void insertCategory(ProductStore productStore, Integer productId) {
-        CategoryDescription categoryDescription = categoryDescriptionMapper.selectByNameAndLanguageId(productStore.getCategory(), 1);
+    private void insertCategorie(ProductStore productStore, Integer productId) {
+        Categorie categorie = categorieMapper.selectByName(productStore.getCategory());
+        if (categorie.getParentId() != null) {
+            Categorie categorie1 = categorieMapper.selectByPrimaryKey(categorie.getParentId());
+            if (categorie1.getParentId() != null) {
+                Categorie categorie2 = categorieMapper.selectByPrimaryKey(categorie1.getParentId());
+                if (categorie2 == null) {
+                    insertCategory(categorie2.getName(), productId);
+                } else {
+                    throw new ResourceNotFoundException();
+                }
+            }
+            insertCategory(categorie1.getName(), productId);
+        }
+        insertCategory(categorie.getName(), productId);
+    }
+
+    private void insertCategory(String name, Integer productId) {
+        CategoryDescription categoryDescription = categoryDescriptionMapper.selectByNameAndLanguageId(name, 1);
         if (null == categoryDescription) {
             Category category = Category.builder()
                     .top(true)
@@ -203,18 +225,14 @@ public class Upload2WebProductService {
             categoryDescription = CategoryDescription.builder()
                     .categoryId(categoryId)
                     .languageId(1)
-                    .name(productStore.getCategory())
+                    .name(name)
                     .description("")
-                    .metaTitle(productStore.getCategory())
+                    .metaTitle(name)
                     .metaDescription("")
                     .metaKeyword("")
                     .build();
             categoryDescriptionMapper.insert(categoryDescription);
         } else {
-            String[] tempCategory = categoryDescription.getName().split(">");
-            for (String s : tempCategory) {
-                CategoryDescription categoryDescription1 = categoryDescriptionMapper.selectByNameAndLanguageId(s, 1);
-            }
             productToCategoryMapper.insertSelective(new ProductToCategory(productId, categoryDescription.getCategoryId()));
         }
     }
@@ -286,7 +304,21 @@ public class Upload2WebProductService {
         return product.getProductId();
     }
 
-    public boolean upload2Shopify(Integer productId) {
+    public boolean upload2Shopify(UploadRequest uploadRequest, User currentUser) throws UnsupportedEncodingException {
+
+        Integer productId = uploadRequest.getProductId();
+        Integer siteId = uploadRequest.getSiteId();
+        Site site = siteMapper.selectByPrimaryKey(siteId);
+        if (site.getApi() == null){
+            throw new SiteNotFoundException();
+        }
+
+//        String authorization = site.getApiKey() + ":" + site.getApiPassword();
+//        Base64 base64 = new Base64();
+//        String base64Token = base64.encodeToString(authorization.getBytes("UTF-8"));
+//        String token = "Basic " + base64Token;
+
+
         ProductStore productStore = productStoreMapper.selectByPrimaryKey(productId);
         String productOptions = productStore.getProductOptions();
         JSONObject jsonObject = new JSONObject(productOptions);
@@ -349,8 +381,16 @@ public class Upload2WebProductService {
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         httpHeaders.set("Authorization", SHOPIFY_TOKEN);
         HttpEntity<Map<String, Map<String, Object>>> request = new HttpEntity<>(productParam, httpHeaders);
-        String body = restTemplate.postForEntity(SHOPIFY_URL, request, String.class).getBody();
-        log.info(body);
+        ResponseEntity<String> resp = restTemplate.postForEntity(site.getApi(), request, String.class);
+        if (!resp.getStatusCode().equals(HttpStatus.CREATED)){
+            throw new FileUploadException();
+        }
+        productStoreMapper.updateByPrimaryKeySelective(ProductStore.builder()
+                .id(productId)
+                .uploadShopifyBy(currentUser.getId())
+                .uploadShopify(true)
+                .build());
+        log.info(resp.toString());
         return true;
     }
 
@@ -375,10 +415,10 @@ public class Upload2WebProductService {
     }
 
 
-    public ProductStore uploadPic2OpenCart(Upload2OpenCartRequest upload2OpenCartRequest, Map<String, Object> tokenAndCookies) throws IOException {
+    public ProductStore uploadPic2OpenCart(UploadRequest uploadRequest, Map<String, Object> tokenAndCookies) throws IOException {
 
-        Integer productId = upload2OpenCartRequest.getProductId();
-        Integer siteId = upload2OpenCartRequest.getSiteId();
+        Integer productId = uploadRequest.getProductId();
+        Integer siteId = uploadRequest.getSiteId();
         ProductStore productStore = productStoreMapper.selectByPrimaryKey(productId);
         Site site = siteMapper.selectByPrimaryKey(siteId);
         String domain = site.getDomain();
@@ -501,9 +541,9 @@ public class Upload2WebProductService {
 
     }
 
-    public Map<String, Object> login2OpenCart(Upload2OpenCartRequest upload2OpenCartRequest) {
+    public Map<String, Object> login2OpenCart(UploadRequest uploadRequest) {
 
-        Integer siteId = upload2OpenCartRequest.getSiteId();
+        Integer siteId = uploadRequest.getSiteId();
         Site site = siteMapper.selectByPrimaryKey(siteId);
         String domain = site.getDomain();
         String url = domain + "?route=common/login";
@@ -535,5 +575,14 @@ public class Upload2WebProductService {
             throw new CurrentUserException();
         }
         return result;
+    }
+
+    public void checkUploaded(UploadRequest uploadRequest) {
+        Integer productId = uploadRequest.getProductId();
+        ProductStore productStore = productStoreMapper.selectByPrimaryKey(productId);
+        Site site = siteMapper.selectByPrimaryKey(uploadRequest.getSiteId());
+        if ((productStore.getUploadOpencart() && site.getSiteCategory()) || (productStore.getUploadShopify() && !site.getSiteCategory()) ){
+            throw new ProductAlreadyUploadException();
+        }
     }
 }

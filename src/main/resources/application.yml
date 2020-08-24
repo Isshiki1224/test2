@@ -29,6 +29,7 @@ spring:
     redis:
       repositories:
         enabled: false
+
 mybatis:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

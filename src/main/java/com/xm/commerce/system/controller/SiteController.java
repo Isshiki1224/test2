@@ -30,8 +30,8 @@ public class SiteController {
     }
 
     @GetMapping("/sites")
-    public ResponseData sites() {
-        List<Site> sites = siteService.selectAll();
+    public ResponseData sites(Integer siteCategory) {
+        List<Site> sites = siteService.selectAll(siteCategory);
         return new ResponseData("", 200, sites);
     }
 

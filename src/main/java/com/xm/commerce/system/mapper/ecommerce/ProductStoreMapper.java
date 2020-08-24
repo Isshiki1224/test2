@@ -18,4 +18,6 @@ public interface ProductStoreMapper {
     List<ProductStore> selectByCategory(CategoryRequest categoryRequest);
 
     int deleteByBatch(@Param("ids") List<Integer> ids);
+
+    int insertUploaderById(@Param("userId") Integer id, @Param("productId") Integer productId, @Param("category") Integer category);
 }

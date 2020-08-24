@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class Upload2OpenCartRequest {
+public class UploadRequest {
 
     Integer productId;
     Integer siteId;

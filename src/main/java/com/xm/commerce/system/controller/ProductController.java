@@ -16,7 +16,7 @@ public class ProductController {
     @Resource
     ProductStoreService productStoreService;
 
-    @PostMapping("/product/add")
+    @PostMapping("/product/save")
     public ResponseData addProduct(@RequestBody ProductStore productStore){
         if (productStore.getId() == null){
             productStoreService.insertSelective(productStore);
@@ -27,7 +27,7 @@ public class ProductController {
     }
 
     @GetMapping("/products")
-    public ResponseData products(CategoryRequest categoryRequest) {
+    public ResponseData products(@RequestBody CategoryRequest categoryRequest) {
         // todo 分页
         List<ProductStore> productStores = productStoreService.selectByCategory(categoryRequest);
         return new ResponseData("", 200, productStores);

@@ -13,11 +13,13 @@
     <result column="account" jdbcType="VARCHAR" property="account" />
     <result column="password" jdbcType="VARCHAR" property="password" />
     <result column="api" jdbcType="VARCHAR" property="api" />
-    <result column="user_token" jdbcType="VARCHAR" property="userToken" />
+    <result column="api_key" jdbcType="VARCHAR" property="apiKey" />
+    <result column="api_password" jdbcType="VARCHAR" property="apiPassword" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, site_name, site_category, ip, `domain`, port, account, `password`, api, user_token
+    id, site_name, site_category, ip, `domain`, port, account, `password`, api, api_key, 
+    api_password
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     <!--@mbg.generated-->
@@ -35,12 +37,12 @@
     <!--@mbg.generated-->
     insert into ecommerce_site (site_name, site_category, ip, 
       `domain`, port, account, 
-      `password`, api, user_token
-      )
+      `password`, api, api_key, 
+      api_password)
     values (#{siteName,jdbcType=VARCHAR}, #{siteCategory,jdbcType=BOOLEAN}, #{ip,jdbcType=VARCHAR}, 
       #{domain,jdbcType=VARCHAR}, #{port,jdbcType=VARCHAR}, #{account,jdbcType=VARCHAR}, 
-      #{password,jdbcType=VARCHAR}, #{api,jdbcType=VARCHAR}, #{userToken,jdbcType=VARCHAR}
-      )
+      #{password,jdbcType=VARCHAR}, #{api,jdbcType=VARCHAR}, #{apiKey,jdbcType=VARCHAR}, 
+      #{apiPassword,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.xm.commerce.system.model.entity.ecommerce.Site" useGeneratedKeys="true">
     <!--@mbg.generated-->
@@ -70,8 +72,11 @@
       <if test="api != null">
         api,
       </if>
-      <if test="userToken != null">
-        user_token,
+      <if test="apiKey != null">
+        api_key,
+      </if>
+      <if test="apiPassword != null">
+        api_password,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -99,8 +104,11 @@
       <if test="api != null">
         #{api,jdbcType=VARCHAR},
       </if>
-      <if test="userToken != null">
-        #{userToken,jdbcType=VARCHAR},
+      <if test="apiKey != null">
+        #{apiKey,jdbcType=VARCHAR},
+      </if>
+      <if test="apiPassword != null">
+        #{apiPassword,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -132,8 +140,11 @@
       <if test="api != null">
         api = #{api,jdbcType=VARCHAR},
       </if>
-      <if test="userToken != null">
-        user_token = #{userToken,jdbcType=VARCHAR},
+      <if test="apiKey != null">
+        api_key = #{apiKey,jdbcType=VARCHAR},
+      </if>
+      <if test="apiPassword != null">
+        api_password = #{apiPassword,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
@@ -149,11 +160,13 @@
       account = #{account,jdbcType=VARCHAR},
       `password` = #{password,jdbcType=VARCHAR},
       api = #{api,jdbcType=VARCHAR},
-      user_token = #{userToken,jdbcType=VARCHAR}
+      api_key = #{apiKey,jdbcType=VARCHAR},
+      api_password = #{apiPassword,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 
   <select id="selectAll" resultMap="BaseResultMap">
-    select id, site_name from ecommerce_site
+    select <include refid="Base_Column_List" /> from ecommerce_site
+    where site_category = #{siteCategory}
   </select>
 </mapper>

@@ -86,6 +86,6 @@
   <select id="findCategorieByName" resultMap="BaseResultMap">
     SELECT <include refid="Base_Column_List"/>
     FROM ecommerce_category
-    WHERE name = concat('%', #{name}, '%')
+    WHERE name like concat('%', #{name}, '%')
   </select>
 </mapper>

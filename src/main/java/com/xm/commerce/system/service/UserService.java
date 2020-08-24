@@ -35,4 +35,10 @@ public class UserService {
 		}
 		return new UserDto(user, roles, permissions);
 	}
+
+	public User findUserByUsername(String username) {
+		return userMapper.findByUsername(username)
+				.orElseThrow(() -> new CannotFindByUsernameException(ImmutableMap.of(" cant findByUsername", username)));
+	}
+
 }

@@ -18,4 +18,6 @@ public interface CategorieMapper {
     int updateByPrimaryKey(Categorie record);
 
     List<Categorie> findCategorieByName(String name);
+
+    Categorie selectByName(String name);
 }

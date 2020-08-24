@@ -10,7 +10,9 @@ public enum ExceptionCode {
     REDIS_IS_LOCKED(15, HttpStatus.OK, "缓存已被锁"),
     FILE_UPLOAD_EXCEPTION(18, HttpStatus.BAD_REQUEST, "文件上传错误"),
     CURRENT_USER_EXCEPTION(21, HttpStatus.BAD_REQUEST, "用户名密码错误"),
-    CREATE_FOLDER_EXCEPTION(21, HttpStatus.BAD_REQUEST, "商品入站失败，商品文件存放目录不存在");
+    SITE_NOT_FOUND(13, HttpStatus.BAD_REQUEST, "站点错误"),
+    PRODUCT_ALREADY_UPLOAD(16, HttpStatus.BAD_REQUEST, "商品已入站"),
+    CREATE_FOLDER_EXCEPTION(12, HttpStatus.BAD_REQUEST, "商品入站失败，商品文件存放目录不存在");
 
 
     private final int code;
