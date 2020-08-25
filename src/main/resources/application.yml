@@ -35,9 +35,6 @@ mybatis:
 
 jwt:
   secretKey: C*F-JaNdRgUkXn2r5u8x/A?D(G+KbPeShVmYq3s6v9y$B&E)H@McQfTjWnZr4u7w
-# pageHelper
-#pagehelper:
-#  helperDialect: mysql
-#  reasonable: true
-#  supportMethodsArguments: true
-#  params: count=countSq
+logging:
+  level:
+    com.solin.springmvc.mapper: debug
