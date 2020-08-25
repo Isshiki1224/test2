@@ -5,7 +5,7 @@ import com.xm.commerce.system.mapper.ecommerce.ProductStoreMapper;
 import com.xm.commerce.system.model.entity.ecommerce.ProductStore;
 import com.xm.commerce.system.model.entity.ecommerce.User;
 import com.xm.commerce.system.model.request.CategoryRequest;
-import com.xm.commerce.system.util.DateUtil;
+import com.xm.commerce.system.model.response.ProductResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +13,7 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -92,15 +93,20 @@ public class ProductStoreService {
         return productStoreMapper.updateByPrimaryKey(record);
     }
 
-    public List<ProductStore> selectByCategory(CategoryRequest categoryRequest) {
+    public List<ProductResponse> selectByCategory(CategoryRequest categoryRequest) {
         List<ProductStore> productStores = null;
 //        if (categoryRequest.getPage() != null && categoryRequest.getPageSize() != null) {
 //            PageHelper.startPage(categoryRequest.getPage(), categoryRequest.getPageSize());
 //            productStores = productStoreMapper.selectByCategory(categoryRequest);
 //        }
         productStores = productStoreMapper.selectByCategory(categoryRequest);
-        log.info(productStores.toString());
-        return productStores;
+        List<ProductResponse> responses = new ArrayList<>();
+        productStores.forEach(productStore -> {
+            ProductResponse productResponse = new ProductResponse(productStore);
+            responses.add(productResponse);
+        });
+
+        return responses;
     }
 
     public int deleteByBatch(List<Integer> ids) {

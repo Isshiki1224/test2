@@ -6,6 +6,7 @@ import com.xm.commerce.system.model.dto.FileUploadDto;
 import com.xm.commerce.system.model.entity.ecommerce.ProductStore;
 import com.xm.commerce.system.model.entity.ecommerce.User;
 import com.xm.commerce.system.model.request.CategoryRequest;
+import com.xm.commerce.system.model.response.ProductResponse;
 import com.xm.commerce.system.model.response.ResponseCode;
 import com.xm.commerce.system.model.response.ResponseData;
 import com.xm.commerce.system.service.ProductStoreService;
@@ -40,8 +41,8 @@ public class ProductController {
     @GetMapping("/products")
     public ResponseData products(CategoryRequest categoryRequest) {
         // todo 分页
-        List<ProductStore> productStores = productStoreService.selectByCategory(categoryRequest);
-        return new ResponseData("", 200, productStores);
+        List<ProductResponse> responses = productStoreService.selectByCategory(categoryRequest);
+        return new ResponseData("", 200, responses);
     }
 
     @GetMapping("/product/{id}")
