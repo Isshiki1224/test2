@@ -30,12 +30,18 @@ spring:
       repositories:
         enabled: false
 
-mybatis:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-
 jwt:
   secretKey: C*F-JaNdRgUkXn2r5u8x/A?D(G+KbPeShVmYq3s6v9y$B&E)H@McQfTjWnZr4u7w
+
+ftp:
+  ip: 10.10.10.9
+  user: c
+  password: 123123
+  port: 22
+  filePath: /ecommerce/
+  parentFilePath: publicFileUpload
+  domain: 10.10.10.9
+
 logging:
   level:
     com.xm.commerce.system.mapper: debug

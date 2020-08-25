@@ -20,6 +20,11 @@ abstract class BaseException extends RuntimeException {
         }
     }
 
+    public BaseException(ExceptionCode exceptionCode){
+        super(exceptionCode.getMessage());
+        this.exceptionCode = exceptionCode;
+    }
+
     BaseException(ExceptionCode exceptionCode, Map<String, Object> data, Throwable cause) {
         super(exceptionCode.getMessage(), cause);
         this.exceptionCode = exceptionCode;

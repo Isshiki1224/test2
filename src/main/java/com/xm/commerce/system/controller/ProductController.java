@@ -1,13 +1,20 @@
 package com.xm.commerce.system.controller;
 
+import com.xm.commerce.security.util.CurrentUserUtils;
+import com.xm.commerce.system.constant.EcommerceConstant;
+import com.xm.commerce.system.model.dto.FileUploadDto;
 import com.xm.commerce.system.model.entity.ecommerce.ProductStore;
+import com.xm.commerce.system.model.entity.ecommerce.User;
 import com.xm.commerce.system.model.request.CategoryRequest;
+import com.xm.commerce.system.model.response.ResponseCode;
 import com.xm.commerce.system.model.response.ResponseData;
-
 import com.xm.commerce.system.service.ProductStoreService;
+import com.xm.commerce.system.util.FileUtil;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -15,9 +22,13 @@ import java.util.List;
 public class ProductController {
     @Resource
     ProductStoreService productStoreService;
+    @Resource
+    FileUtil fileUtil;
+    @Resource
+    CurrentUserUtils currentUserUtils;
 
     @PostMapping("/product/save")
-    public ResponseData addProduct(@RequestBody ProductStore productStore){
+    public ResponseData addProduct(@RequestBody ProductStore productStore) throws IOException {
         if (productStore.getId() == null){
             productStoreService.insertSelective(productStore);
         }else{
@@ -27,7 +38,7 @@ public class ProductController {
     }
 
     @GetMapping("/products")
-    public ResponseData products(@RequestBody CategoryRequest categoryRequest) {
+    public ResponseData products(CategoryRequest categoryRequest) {
         // todo 分页
         List<ProductStore> productStores = productStoreService.selectByCategory(categoryRequest);
         return new ResponseData("", 200, productStores);
@@ -51,7 +62,12 @@ public class ProductController {
         return new ResponseData("删除成功", 200);
     }
 
-
+    @PostMapping("/product/uploadImage")
+    public ResponseData uploadImage(@RequestBody MultipartFile file) throws Exception {
+        User currentUser = currentUserUtils.getCurrentUser();
+        FileUploadDto fileUploadDto = fileUtil.fileUpload(file, EcommerceConstant.IMAGE_PATH + currentUser.getId() + "." + currentUser.getUsername() + "/");
+        return new ResponseData("上传成功", ResponseCode.SUCCESS, fileUploadDto);
+    }
 
 
 }

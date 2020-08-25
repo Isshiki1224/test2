@@ -1,8 +1,7 @@
 package com.xm.commerce.system.service;
 
 
-import com.google.common.collect.ImmutableMap;
-import com.xm.commerce.system.exception.*;
+import com.xm.commerce.common.exception.*;
 import com.xm.commerce.system.mapper.ecommerce.CategorieMapper;
 import com.xm.commerce.system.mapper.ecommerce.ProductStoreMapper;
 import com.xm.commerce.system.mapper.ecommerce.SiteMapper;
@@ -194,15 +193,18 @@ public class Upload2WebProductService {
             Categorie categorie1 = categorieMapper.selectByPrimaryKey(categorie.getParentId());
             if (categorie1.getParentId() != null) {
                 Categorie categorie2 = categorieMapper.selectByPrimaryKey(categorie1.getParentId());
-                if (categorie2 == null) {
+                if (categorie2.getParentId() == null) {
                     insertCategory(categorie2.getName(), productId);
                 } else {
                     throw new ResourceNotFoundException();
                 }
+            }else{
+                insertCategory(categorie1.getName(), productId);
             }
-            insertCategory(categorie1.getName(), productId);
+        }else{
+            insertCategory(categorie.getName(), productId);
         }
-        insertCategory(categorie.getName(), productId);
+
     }
 
     private void insertCategory(String name, Integer productId) {
@@ -275,6 +277,7 @@ public class Upload2WebProductService {
                 .upc("")
                 .ean("")
                 .jan("")
+                .isbn("")
                 .mpn(productStore.getMpn())
                 .location("")
                 .quantity(productStore.getQuantity())
@@ -309,7 +312,7 @@ public class Upload2WebProductService {
         Integer productId = uploadRequest.getProductId();
         Integer siteId = uploadRequest.getSiteId();
         Site site = siteMapper.selectByPrimaryKey(siteId);
-        if (site.getApi() == null){
+        if (site.getApi() == null) {
             throw new SiteNotFoundException();
         }
 
@@ -382,7 +385,7 @@ public class Upload2WebProductService {
         httpHeaders.set("Authorization", SHOPIFY_TOKEN);
         HttpEntity<Map<String, Map<String, Object>>> request = new HttpEntity<>(productParam, httpHeaders);
         ResponseEntity<String> resp = restTemplate.postForEntity(site.getApi(), request, String.class);
-        if (!resp.getStatusCode().equals(HttpStatus.CREATED)){
+        if (!resp.getStatusCode().equals(HttpStatus.CREATED)) {
             throw new FileUploadException();
         }
         productStoreMapper.updateByPrimaryKeySelective(ProductStore.builder()
@@ -440,27 +443,28 @@ public class Upload2WebProductService {
         httpHeaders.set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36");
         httpHeaders.set("accept", "application/json, text/javascript, */*; q=0.01");
 
-        MultiValueMap<String, Object> uploadParam = new LinkedMultiValueMap<>();
+
         String image = productStore.getImage();
         StringBuilder sb = new StringBuilder();
-        String tempDir = "temp" + System.currentTimeMillis();
-        try {
-            for (String s : image.split(",")) {
-                uploadAndCreated(url, httpHeaders, uploadParam, tempDir, s, sb);
-            }
-            productStore.setImage(sb.toString().substring(0, sb.toString().lastIndexOf(",")));
-        } finally {
-            File file = new File(System.getProperty("java.io.tmpdir") + File.separator + tempDir);
-            if (file.exists()) {
-                deleteFolder(file);
-            }
+//        String tempDir = "temp" + System.currentTimeMillis();
+        FileSystemResource fileSystemResource = null;
+
+        for (String s : image.split(",")) {
+            fileSystemResource = imageUrl2FSR(s);
+            MultiValueMap<String, Object> uploadParam = new LinkedMultiValueMap<>();
+            uploadParam.add("file[]", fileSystemResource);
+            HttpEntity request = new HttpEntity(uploadParam, httpHeaders);
+            uploadAndCreated(url, request);
+            sb.append("catalog/").append(s).append(",");
+            boolean result = fileSystemResource.getFile().delete();
+            log.info("临时文件删除" + (result ? "成功" : "失败"));
         }
+        productStore.setImage(sb.toString().substring(0, sb.toString().lastIndexOf(",")));
+
         return productStore;
     }
 
-    private void uploadAndCreated(String url, HttpHeaders httpHeaders, MultiValueMap<String, Object> uploadParam, String tempDir, String s, StringBuilder sb) throws IOException {
-        uploadParam.add("file[]", imageUrl2FSR(s, tempDir));
-        HttpEntity request = new HttpEntity(uploadParam, httpHeaders);
+    private void uploadAndCreated(String url, HttpEntity request) throws IOException {
         String body = restTemplate.postForEntity(url, request, String.class).getBody();
         if (body != null) {
             log.info(body);
@@ -492,7 +496,6 @@ public class Upload2WebProductService {
                     throw new FileUploadException();
                 }
                 log.info("图片上传成功");
-                sb.append("catalog/").append(s).append(",");
             } catch (Exception e) {
                 log.info("图片上传失败");
                 throw new FileUploadException();
@@ -516,15 +519,17 @@ public class Upload2WebProductService {
         log.info("临时目录{" + file.getPath() + "}删除" + (delete ? "成功" : "失败"));
     }
 
-    public static FileSystemResource imageUrl2FSR(String path, String tempDir) throws IOException {
+    public static FileSystemResource imageUrl2FSR(String path) throws IOException {
         HttpURLConnection httpUrl = (HttpURLConnection) new URL(path).openConnection();
         httpUrl.connect();
+        File file = File.createTempFile(path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf(".")), path.substring(path.lastIndexOf(".")));
         try (InputStream ins = httpUrl.getInputStream()) {
-            File file = new File(System.getProperty("java.io.tmpdir") + File.separator + tempDir + File.separator + path.substring(path.lastIndexOf("/")));
-            if (!file.getParentFile().exists()) {
-                boolean mkdir = file.getParentFile().mkdir();
-                log.info("临时文件目录{" + file.getPath() + "}创建" + (mkdir ? "成功" : "失败"));
-            }
+//            File file = new File(System.getProperty("java.io.tmpdir") + File.separator + tempDir + File.separator + path.substring(path.lastIndexOf("/")));
+//            if (!file.getParentFile().exists()) {
+//                boolean mkdir = file.getParentFile().mkdir();
+//                log.info("临时文件目录{" + file.getPath() + "}创建" + (mkdir ? "成功" : "失败"));
+//            }
+            log.info("临时文件{" + file.getPath() + "}创建成功");
             if (file.exists()) {
                 return new FileSystemResource(file);
             }
@@ -538,7 +543,6 @@ public class Upload2WebProductService {
             }
             return new FileSystemResource(file);
         }
-
     }
 
     public Map<String, Object> login2OpenCart(UploadRequest uploadRequest) {
@@ -581,7 +585,7 @@ public class Upload2WebProductService {
         Integer productId = uploadRequest.getProductId();
         ProductStore productStore = productStoreMapper.selectByPrimaryKey(productId);
         Site site = siteMapper.selectByPrimaryKey(uploadRequest.getSiteId());
-        if ((productStore.getUploadOpencart() && site.getSiteCategory()) || (productStore.getUploadShopify() && !site.getSiteCategory()) ){
+        if ((productStore.getUploadOpencart() && site.getSiteCategory()) || (productStore.getUploadShopify() && !site.getSiteCategory())) {
             throw new ProductAlreadyUploadException();
         }
     }

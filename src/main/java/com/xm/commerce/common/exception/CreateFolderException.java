@@ -1,4 +1,4 @@
-package com.xm.commerce.system.exception;
+package com.xm.commerce.common.exception;
 
 public class CreateFolderException extends BaseException {
     public CreateFolderException() {

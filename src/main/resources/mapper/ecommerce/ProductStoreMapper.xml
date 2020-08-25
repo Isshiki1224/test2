@@ -291,16 +291,16 @@
             </if>
             and (!upload_opencart or !upload_shopify)
         </where>
-        <if test="byAddTime != null or byPrice != null">
+        <if test="byAddTime != 0 or byPrice != 0">
             order by price
             <choose>
-                <when test="byPrice == 0">
+                <when test="byPrice == 2">
                     desc
                 </when>
             </choose>
             , data_added
             <choose>
-                <when test="byAddTime == 0">
+                <when test="byAddTime == 2">
                     desc
                 </when>
             </choose>

@@ -1,8 +1,8 @@
-package com.xm.commerce.system.exception;
+package com.xm.commerce.common.exception;
 
 import java.util.Map;
 
-public class ResourceNotFoundException extends BaseException{
+public class ResourceNotFoundException extends BaseException {
 
 
     public ResourceNotFoundException(Map<String, Object> data) {

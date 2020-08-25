@@ -1,7 +1,6 @@
-package com.xm.commerce.system.exception;
+package com.xm.commerce.common.exception;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -10,10 +9,10 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import sun.misc.Request;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,7 +27,7 @@ public class GlobalExceptionHandler {
      * @param e
      * @return
      */
-    @ExceptionHandler(value = BaseException.class)
+    @ExceptionHandler(value = com.xm.commerce.common.exception.BaseException.class)
     public ResponseEntity<ErrorResponse> ResourceNotFoundExceptionHandler(HttpServletRequest req, BaseException e){
         ErrorResponse errorResponse = new ErrorResponse(e, req.getRequestURI());
         log.error("occur BaseException:" + errorResponse.toString());
@@ -59,21 +58,11 @@ public class GlobalExceptionHandler {
      * @throws Exception
      */
     @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public void handleException(MaxUploadSizeExceededException ex, HttpServletResponse response) throws Exception {
-        StringBuilder error = new StringBuilder();
-        if (ex != null) {
-            SizeLimitExceededException cause = (SizeLimitExceededException) ex.getCause();
-            long maxUploadSize = ex.getMaxUploadSize();
-            String actualSize = String.valueOf(cause.getActualSize());
-            double parseDouble = Double.parseDouble(actualSize) / 1024 / 1024;
-            BigDecimal b = new BigDecimal(parseDouble);
-            double d = b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-            error.append("最大上传文件为:" + maxUploadSize / 1024 / 1024).append("M;");
-            error.append("实际文件大小为：").append(d).append("M");
-            System.out.println(error.toString());
-        }
-        error.append("上传文件出错");
-        System.out.println(error.toString());
+    public ResponseEntity<ErrorResponse> handleException(MaxUploadSizeExceededException ex, HttpServletRequest request) throws Exception {
+        long maxUploadSize = ex.getMaxUploadSize();
+        log.error("大小超出限制,最大:" + maxUploadSize);
+        ErrorResponse errorResponse = new ErrorResponse(ExceptionCode.MAX_UPLOAD_SIZE, request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
 }

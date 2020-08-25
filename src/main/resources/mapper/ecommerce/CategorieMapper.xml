@@ -88,4 +88,10 @@
     FROM ecommerce_category
     WHERE name like concat('%', #{name}, '%')
   </select>
+
+  <select id="selectByName" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List"/>
+    FROM ecommerce_category
+    WHERE detail = #{name}
+  </select>
 </mapper>
