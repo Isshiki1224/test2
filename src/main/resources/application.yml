@@ -37,4 +37,4 @@ jwt:
   secretKey: C*F-JaNdRgUkXn2r5u8x/A?D(G+KbPeShVmYq3s6v9y$B&E)H@McQfTjWnZr4u7w
 logging:
   level:
-    com.solin.springmvc.mapper: debug
+    com.xm.commerce.system.mapper: debug
