@@ -9,8 +9,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class FileUploadDto {
+public class PictureDto {
 
-    private String url;
-    private long size;
+	private byte[] bytes;
+	private String suffix;
 }

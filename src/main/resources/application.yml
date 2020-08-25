@@ -34,13 +34,15 @@ jwt:
   secretKey: C*F-JaNdRgUkXn2r5u8x/A?D(G+KbPeShVmYq3s6v9y$B&E)H@McQfTjWnZr4u7w
 
 ftp:
-  ip: 10.10.10.9
+  ip: 10.10.10.28
   user: c
-  password: 123123
+  password: 895684
   port: 22
   filePath: /ecommerce/
   parentFilePath: publicFileUpload
-  domain: 10.10.10.9
+  domain: 10.10.10.28
+  prvKeyFilePath: /Users/c/Desktop/140.82.46.209-NewYork/picUser/id_rsa
+  pubKeyFilePath: /Users/c/Desktop/140.82.46.209-NewYork/picUser/id_rsa.pub
 
 logging:
   level:

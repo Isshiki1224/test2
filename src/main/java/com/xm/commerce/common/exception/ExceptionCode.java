@@ -14,7 +14,8 @@ public enum ExceptionCode {
     SITE_NOT_FOUND(13, HttpStatus.BAD_REQUEST, "站点错误"),
     PRODUCT_ALREADY_UPLOAD(16, HttpStatus.BAD_REQUEST, "商品已入站"),
     MAX_UPLOAD_SIZE(17, HttpStatus.BAD_REQUEST, "文件大小超出限制（10m）"),
-    CREATE_FOLDER_EXCEPTION(12, HttpStatus.BAD_REQUEST, "商品入站失败，商品文件存放目录不存在");
+    CREATE_FOLDER_EXCEPTION(12, HttpStatus.BAD_REQUEST, "商品入站失败，商品文件存放目录不存在"),
+    SFTP_CONNECT_EXCEPTION(20, HttpStatus.INTERNAL_SERVER_ERROR, "文件服务器无法连接");
 
 
     private final int code;

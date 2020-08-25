@@ -29,7 +29,7 @@ public class ProductController {
     CurrentUserUtils currentUserUtils;
 
     @PostMapping("/product/save")
-    public ResponseData addProduct(@RequestBody ProductStore productStore) throws IOException {
+    public ResponseData addProduct(@RequestBody ProductStore productStore) throws Exception {
         if (productStore.getId() == null){
             productStoreService.insertSelective(productStore);
         }else{
