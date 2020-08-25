@@ -79,6 +79,10 @@ public class ProductStoreService {
         return productStoreMapper.selectByPrimaryKey(id);
     }
 
+    public ProductResponse selectRespByPrimaryKey(Integer id) {
+        ProductStore productStore = productStoreMapper.selectByPrimaryKey(id);
+        return new ProductResponse(productStore);
+    }
 
     public int updateByPrimaryKeySelective(ProductStore record) {
         if (record.getMetaTagTitle() == null) {

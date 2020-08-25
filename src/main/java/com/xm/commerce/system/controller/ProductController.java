@@ -47,8 +47,9 @@ public class ProductController {
 
     @GetMapping("/product/{id}")
     public ResponseData getProduct(@PathVariable Integer id) {
-        ProductStore productStore = productStoreService.selectByPrimaryKey(id);
-        return new ResponseData("", 200, productStore);
+//        ProductStore productStore = productStoreService.selectByPrimaryKey(id);
+        ProductResponse productResponse = productStoreService.selectRespByPrimaryKey(id);
+        return new ResponseData("", 200, productResponse);
     }
 
     @PostMapping("/products")
