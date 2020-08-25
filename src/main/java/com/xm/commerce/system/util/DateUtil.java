@@ -19,26 +19,4 @@ public class DateUtil {
 	public static Date strToDate(String strDate) {
 		return DATE_FORMAT.parse(strDate, new ParsePosition(0));
 	}
-
-	public static Date dateNow() {
-		Date currentTime = new Date();
-		DATE_FORMAT.format(currentTime);
-		return currentTime;
-	}
-
-	public static Date localDate2Date(LocalDate now) {
-		if (null == now) {
-			return null;
-		}
-		ZonedDateTime startOfDay = now.atStartOfDay(ZoneId.systemDefault());
-		return Date.from(startOfDay.toInstant());
-	}
-
-	public static Date previousDateMinute(int beforeMinute) {
-		Calendar c = Calendar.getInstance();
-		c.setTime(dateNow());
-		c.add(Calendar.MINUTE, -beforeMinute);
-
-		return c.getTime();
-	}
 }

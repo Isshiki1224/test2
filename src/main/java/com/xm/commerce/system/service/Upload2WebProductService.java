@@ -215,8 +215,8 @@ public class Upload2WebProductService {
                     .parentId(0)
                     .column(1)
                     .sortOrder(0)
-                    .dateAdded(DateUtil.dateNow())
-                    .dateModified(DateUtil.dateNow())
+                    .dateAdded(new Date())
+                    .dateModified(new Date())
                     .status(true)
                     .build();
             categoryMapper.insertSelective(category);
@@ -288,7 +288,7 @@ public class Upload2WebProductService {
                 .shipping(true)
                 .points(0)
                 .taxClassId(0)
-                .dateAvailable(DateUtil.dateNow())
+                .dateAvailable(new Date())
                 .weight(BigDecimal.valueOf(0))
                 .weightClassId(1)
                 .length(BigDecimal.valueOf(0))
@@ -300,8 +300,8 @@ public class Upload2WebProductService {
                 .sortOrder(0)
                 .status(true)
                 .viewed(0)
-                .dateAdded(DateUtil.dateNow())
-                .dateModified(DateUtil.dateNow())
+                .dateAdded(new Date())
+                .dateModified(new Date())
                 .build();
         productMapper.insert(product);
         return product.getProductId();

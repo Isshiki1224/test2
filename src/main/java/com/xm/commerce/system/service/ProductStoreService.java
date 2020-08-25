@@ -1,11 +1,8 @@
 package com.xm.commerce.system.service;
 
-import com.github.pagehelper.PageHelper;
-import com.google.common.collect.ImmutableMap;
-import com.oracle.tools.packager.Log;
-import com.xm.commerce.common.exception.ResourceNotFoundException;
 import com.xm.commerce.security.util.CurrentUserUtils;
-import com.xm.commerce.system.constant.EcommerceConstant;
+import com.xm.commerce.system.mapper.ecommerce.ProductStoreMapper;
+import com.xm.commerce.system.model.entity.ecommerce.ProductStore;
 import com.xm.commerce.system.model.entity.ecommerce.User;
 import com.xm.commerce.system.model.request.CategoryRequest;
 import com.xm.commerce.system.util.DateUtil;
@@ -13,12 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-
-import com.xm.commerce.system.mapper.ecommerce.ProductStoreMapper;
-import com.xm.commerce.system.model.entity.ecommerce.ProductStore;
-
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -48,19 +43,22 @@ public class ProductStoreService {
         String image = record.getImage();
         for (String s : image.split(",")) {
             if (s.startsWith("http")) {
-                File file = new File(EcommerceConstant.FILE_UPLOAD_PATH + user.getId() + "." + user.getUsername() + s.substring(s.lastIndexOf("/")));
-                if (!file.getParentFile().exists()) {
-                    boolean mkdir = file.getParentFile().mkdir();
-                    if (mkdir) {
-                        boolean newFile = file.createNewFile();
-                        log.info("网络图片{" + s + "}转路径{" + file.getPath() + "}" + (newFile ? "成功" : "失败"));
-                    } else {
-                        throw new ResourceNotFoundException(ImmutableMap.of("文件夹创建失败", false));
-                    }
-                } else {
-                    boolean newFile = file.createNewFile();
-                    log.info("网络图片{" + s + "}转路径{" + file.getPath() + "}" + (newFile ? "成功" : "失败"));
-                }
+                InputStream inputStream = new URL(s).openStream();
+
+
+//                File file = new File(EcommerceConstant.FILE_UPLOAD_PATH + user.getId() + "." + user.getUsername() + s.substring(s.lastIndexOf("/")));
+//                if (!file.getParentFile().exists()) {
+//                    boolean mkdir = file.getParentFile().mkdir();
+//                    if (mkdir) {
+//                        boolean newFile = file.createNewFile();
+//                        log.info("网络图片{}转路径{}{}", s, file.getPath(), (newFile ? "成功" : "失败"));
+//                    } else {
+//                        throw new ResourceNotFoundException(ImmutableMap.of("文件夹创建失败", false));
+//                    }
+//                } else {
+//                    boolean newFile = file.createNewFile();
+//                    log.info("网络图片{" + s + "}转路径{" + file.getPath() + "}" + (newFile ? "成功" : "失败"));
+//                }
                 sb.append(sb).append(",");
             }
         }
@@ -70,8 +68,8 @@ public class ProductStoreService {
         }
         record.setUploadOpencart(false);
         record.setUploadShopify(false);
-        record.setDataAdded(DateUtil.dateNow());
-        record.setDataModified(DateUtil.dateNow());
+        record.setDataAdded(new Date());
+        record.setDataModified(new Date());
         return productStoreMapper.insertSelective(record);
     }
 
@@ -85,7 +83,7 @@ public class ProductStoreService {
         if (record.getMetaTagTitle() == null) {
             record.setMetaTagTitle(record.getProductName());
         }
-        record.setDataModified(DateUtil.dateNow());
+        record.setDataModified(new Date());
         return productStoreMapper.updateByPrimaryKeySelective(record);
     }
 
