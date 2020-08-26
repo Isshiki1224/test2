@@ -1,5 +1,7 @@
 package com.xm.commerce.system.controller;
 
+import com.google.common.collect.ImmutableMap;
+import com.xm.commerce.common.exception.ResourceNotFoundException;
 import com.xm.commerce.security.util.CurrentUserUtils;
 import com.xm.commerce.system.constant.EcommerceConstant;
 import com.xm.commerce.system.model.dto.FileUploadDto;
@@ -33,7 +35,7 @@ public class ProductController {
         if (productStore.getId() == null){
             productStoreService.insertSelective(productStore);
         }else{
-            productStoreService.updateByPrimaryKey(productStore);
+            productStoreService.updateByPrimaryKeySelective(productStore);
         }
         return new ResponseData("", 200);
     }
@@ -54,7 +56,9 @@ public class ProductController {
 
     @PostMapping("/products")
     public ResponseData deleteProducts(@RequestBody List<Integer> ids) {
-        productStoreService.deleteByBatch(ids);
+        if (productStoreService.deleteByBatch(ids) == 0) {
+            throw new ResourceNotFoundException(ImmutableMap.of("删除失败", ids));
+        }
         return new ResponseData("删除成功", 200);
     }
 

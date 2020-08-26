@@ -1,6 +1,7 @@
 package com.xm.commerce.system.service;
 
 
+import com.google.common.collect.ImmutableMap;
 import com.xm.commerce.common.exception.*;
 import com.xm.commerce.system.mapper.ecommerce.CategorieMapper;
 import com.xm.commerce.system.mapper.ecommerce.ProductStoreMapper;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
@@ -74,7 +76,7 @@ public class Upload2WebProductService {
 
     @SuppressWarnings(value = {"rawtypes"})
     @Transactional(rollbackFor = Exception.class)
-    public boolean upload2OpenCart(ProductStore productStore, User currentUser) {
+    public boolean upload2OpenCart(ProductStore productStore, User currentUser, Integer siteId) {
 
         // todo
 
@@ -196,10 +198,10 @@ public class Upload2WebProductService {
                 } else {
                     throw new ResourceNotFoundException();
                 }
-            }else{
+            } else {
                 insertCategory(categorie1.getName(), productId);
             }
-        }else{
+        } else {
             insertCategory(categorie.getName(), productId);
         }
 
@@ -305,7 +307,7 @@ public class Upload2WebProductService {
         return product.getProductId();
     }
 
-    public boolean upload2Shopify(UploadRequest uploadRequest, User currentUser) throws UnsupportedEncodingException {
+    public boolean upload2Shopify(UploadRequest uploadRequest, User currentUser) throws Exception {
 
         Integer productId = uploadRequest.getProductId();
         Integer siteId = uploadRequest.getSiteId();
@@ -334,29 +336,34 @@ public class Upload2WebProductService {
             options.add(option);
         }
 
-        List<Object> lists = new ArrayList<>();
-        options.forEach(map -> lists.addAll(Collections.singletonList(map.get("values"))));
+//        List<Object> lists = new ArrayList<>();
 
-        List<Object> result = getVariantsList(lists);
+        JSONArray lists = new JSONArray();
+        options.forEach(map -> lists.put(map.get("values")));
 
+        JSONArray variantsList = getVariantsList(lists);
+
+        List<Object> result = Collections.singletonList(variantsList);
+        log.info("adlfasjsdlfkjs===" + result.toString());
         List<Map<String, Object>> variants = new ArrayList<>();
-        if (result != null) {
-            Object o = result.get(0);
-            if (o instanceof List<?>) {
-                List<?> array = (ArrayList<?>) o;
-                array.forEach(s -> {
-                    Map<String, Object> variant = new HashMap<>();
-                    Object[] ss = (Object[]) s;
-                    for (int i = 0; i < ss.length; i++) {
-                        variant.put("option" + (i + 1), ss[i]);
-                    }
-                    variant.put("price", productStore.getPrice());
-                    variant.put("inventory_quantity", productStore.getQuantity());
-                    variant.put("sku", productStore.getSku());
-                    variants.add(variant);
-                });
+        Object o = result.get(0);
+        JSONArray array = (JSONArray) o;
+        array.forEach(s -> {
+            Map<String, Object> variant = new HashMap<>();
+            if (s instanceof JSONArray) {
+                JSONArray ss = (JSONArray) s;
+                for (int i = 0; i < ss.length(); i++) {
+                    variant.put("option" + (i + 1), ss.get(i));
+                }
+            } else {
+                variant.put("option1", s);
             }
-        }
+            variant.put("price", productStore.getPrice());
+            variant.put("inventory_quantity", productStore.getQuantity());
+            variant.put("sku", productStore.getSku());
+            variants.add(variant);
+        });
+
 
         List<Map<String, String>> images = new ArrayList<>();
         for (String image : productStore.getImage().split(",")) {
@@ -376,13 +383,21 @@ public class Upload2WebProductService {
         mapParam.put("variants", variants);
         mapParam.put("options", options);
         productParam.put("product", mapParam);
-        log.info(productParam.toString());
+        log.info("bbbbb===" + options.toString());
+        log.info("aaaaaaa=====" + variants.toString());
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         httpHeaders.set("Authorization", SHOPIFY_TOKEN);
         HttpEntity<Map<String, Map<String, Object>>> request = new HttpEntity<>(productParam, httpHeaders);
-        ResponseEntity<String> resp = restTemplate.postForEntity(site.getApi(), request, String.class);
+        ResponseEntity<String> resp;
+
+        try {
+            resp = restTemplate.postForEntity(site.getApi(), request, String.class);
+        } catch (Exception e) {
+            throw new SiteNotFoundException(ImmutableMap.of(productStore.getProductName() + "商品入站站点信息错误", site.getApi()));
+        }
+
         if (!resp.getStatusCode().equals(HttpStatus.CREATED)) {
             throw new FileUploadException();
         }
@@ -395,22 +410,33 @@ public class Upload2WebProductService {
         return true;
     }
 
-    private List<Object> getVariantsList(List<Object> lists) {
-        List<Object> result = new ArrayList<>();
-        if (lists.size() == 0) {
+    private JSONArray getVariantsList(JSONArray lists) {
+        JSONArray result = new JSONArray();
+        if (lists.length() == 0) {
             return null;
-        } else if (lists.size() == 1) {
-            return lists;
+        } else if (lists.length() == 1) {
+            return new JSONArray(lists.get(0).toString());
         } else {
             JSONArray options1 = (JSONArray) lists.get(0);
             JSONArray options2 = (JSONArray) lists.get(1);
-            options1.forEach(option1 -> options2.forEach(option2 -> {
-                Object[] temp = {option1, option2};
-                result.add(temp);
-            }));
+            log.info(options1.toString());
+            log.info(options2.toString());
+            options1.forEach(option1 -> {
+                options2.forEach(option2 -> {
+                    JSONArray temp = new JSONArray();
+                    if (option2 instanceof JSONArray) {
+                        ((JSONArray) option2).forEach(temp::put);
+                        temp.put(option1);
+                    } else {
+                        temp.put(option1);
+                        temp.put(option2);
+                    }
+                    result.put(temp);
+                });
+            });
             lists.remove(0);
             lists.remove(0);
-            lists.add(result);
+            lists.put(result);
             return getVariantsList(lists);
         }
     }

@@ -15,6 +15,8 @@ public enum ExceptionCode {
     PRODUCT_ALREADY_UPLOAD(16, HttpStatus.BAD_REQUEST, "商品已入站"),
     MAX_UPLOAD_SIZE(17, HttpStatus.BAD_REQUEST, "文件大小超出限制（10m）"),
     CREATE_FOLDER_EXCEPTION(12, HttpStatus.BAD_REQUEST, "商品入站失败，商品文件存放目录不存在"),
+    VARIANT_EXIST(19, HttpStatus.BAD_REQUEST, "variant exists"),
+    REST_TEMPLATE(21, HttpStatus.BAD_REQUEST, "restTemplate Exception"),
     SFTP_CONNECT_EXCEPTION(20, HttpStatus.INTERNAL_SERVER_ERROR, "文件服务器无法连接");
 
 

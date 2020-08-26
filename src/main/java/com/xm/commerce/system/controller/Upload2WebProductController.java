@@ -4,8 +4,10 @@ import com.xm.commerce.security.util.CurrentUserUtils;
 import com.xm.commerce.system.model.entity.ecommerce.ProductStore;
 import com.xm.commerce.system.model.entity.ecommerce.User;
 import com.xm.commerce.system.model.request.UploadRequest;
+import com.xm.commerce.system.model.response.ProductResponse;
 import com.xm.commerce.system.model.response.ResponseCode;
 import com.xm.commerce.system.model.response.ResponseData;
+import com.xm.commerce.system.service.ProductStoreService;
 import com.xm.commerce.system.service.Upload2WebProductService;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +22,8 @@ public class Upload2WebProductController {
     Upload2WebProductService upload2WebProductService;
     @Resource
     CurrentUserUtils currentUserUtils;
+    @Resource
+    ProductStoreService productStoreService;
 
 
     private User getCurrentUser(){
@@ -32,10 +36,9 @@ public class Upload2WebProductController {
     @PostMapping("/toOpenCart")
     public ResponseData upload2OpenCart(@RequestBody UploadRequest uploadRequest) throws IOException {
         User currentUser = getCurrentUser();
-        upload2WebProductService.checkUploaded(uploadRequest);
         Map<String, Object> tokenAndCookies = upload2WebProductService.login2OpenCart(uploadRequest);
         ProductStore productStore = upload2WebProductService.uploadPic2OpenCart(uploadRequest, tokenAndCookies);
-        boolean result = upload2WebProductService.upload2OpenCart(productStore, currentUser);
+        boolean result = upload2WebProductService.upload2OpenCart(productStore, currentUser,uploadRequest.getSiteId());
         return new ResponseData("入站成功", ResponseCode.SUCCESS );
     }
 
@@ -45,9 +48,9 @@ public class Upload2WebProductController {
     @PostMapping("/toShopify")
     public ResponseData upload2Shopify(@RequestBody UploadRequest uploadRequest) throws Exception {
         User currentUser = getCurrentUser();
-        upload2WebProductService.checkUploaded(uploadRequest);
+        ProductResponse productResponse = productStoreService.selectRespByPrimaryKey(uploadRequest.getProductId());
         boolean result = upload2WebProductService.upload2Shopify(uploadRequest, currentUser);
-        return new ResponseData("入站成功", ResponseCode.SUCCESS);
+        return new ResponseData(productResponse.getProductName() + "商品入站成功", ResponseCode.SUCCESS);
     }
 
 }

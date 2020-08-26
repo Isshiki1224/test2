@@ -289,7 +289,6 @@
             <if test="maxPrice != null and minPrice != null">
                 and price between #{minPrice} and #{maxPrice}
             </if>
-            and (!upload_opencart or !upload_shopify)
         </where>
         <if test="byAddTime != 0 or byPrice != 0">
             order by price

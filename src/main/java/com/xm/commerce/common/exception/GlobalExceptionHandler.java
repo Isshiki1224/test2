@@ -8,6 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import sun.misc.Request;
 
@@ -48,6 +49,15 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse(ExceptionCode.METHOD_ARGUMENT_NOT_VALID, request.getRequestURI(), errors);
 //        log.error("occur MethodArgumentNotValidException:" + errorResponse.toString());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+
+    @ExceptionHandler(RestClientException.class)
+    public ResponseEntity<ErrorResponse> RestClientExceptionHandle(RestClientException ex, HttpServletRequest request){
+        log.info(request.toString());
+        String message = ex.getMessage();
+        log.info(message);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(ExceptionCode.REST_TEMPLATE, request.getRequestURI()));
     }
 
 
