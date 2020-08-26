@@ -17,7 +17,7 @@ public class UserController {
 		this.currentUserUtils = currentUserUtils;
 	}
 
-	@GetMapping
+	@GetMapping("currentUser")
 	public ResponseData getCurrentUser() {
 		String currentUsername = currentUserUtils.getCurrentUsername();
 		return new ResponseData(ResponseCode.SUCCESS, currentUsername);
