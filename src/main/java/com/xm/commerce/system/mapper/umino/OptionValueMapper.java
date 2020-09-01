@@ -1,17 +1,8 @@
 package com.xm.commerce.system.mapper.umino;
 
-import com.xm.commerce.system.model.entity.umino.OptionValue;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.xm.commerce.system.model.entity.umino.OcOptionValue;
 
-public interface OptionValueMapper {
-	int deleteByPrimaryKey(Integer optionValueId);
+public interface OptionValueMapper extends BaseMapper<OcOptionValue> {
 
-	int insert(OptionValue record);
-
-	int insertSelective(OptionValue record);
-
-	OptionValue selectByPrimaryKey(Integer optionValueId);
-
-	int updateByPrimaryKeySelective(OptionValue record);
-
-	int updateByPrimaryKey(OptionValue record);
 }

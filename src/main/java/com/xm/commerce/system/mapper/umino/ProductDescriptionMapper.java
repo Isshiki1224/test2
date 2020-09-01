@@ -1,18 +1,9 @@
 package com.xm.commerce.system.mapper.umino;
 
-import com.xm.commerce.system.model.entity.umino.ProductDescription;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.xm.commerce.system.model.entity.umino.OcProductDescription;
 import org.apache.ibatis.annotations.Param;
 
-public interface ProductDescriptionMapper {
-	int deleteByPrimaryKey(@Param("productId") Integer productId, @Param("languageId") Integer languageId);
+public interface ProductDescriptionMapper extends BaseMapper<OcProductDescription> {
 
-	int insert(ProductDescription record);
-
-	int insertSelective(ProductDescription record);
-
-	ProductDescription selectByPrimaryKey(@Param("productId") Integer productId, @Param("languageId") Integer languageId);
-
-	int updateByPrimaryKeySelective(ProductDescription record);
-
-	int updateByPrimaryKey(ProductDescription record);
 }

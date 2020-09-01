@@ -1,20 +1,12 @@
 package com.xm.commerce.system.mapper.umino;
 
-import com.xm.commerce.system.model.entity.umino.CategoryDescription;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.xm.commerce.system.model.entity.umino.OcCategoryDescription;
 import org.apache.ibatis.annotations.Param;
 
-public interface CategoryDescriptionMapper {
-	int deleteByPrimaryKey(@Param("categoryId") Integer categoryId, @Param("languageId") Integer languageId);
+import java.util.List;
 
-	int insert(CategoryDescription record);
+public interface CategoryDescriptionMapper extends BaseMapper<OcCategoryDescription> {
 
-	int insertSelective(CategoryDescription record);
-
-	CategoryDescription selectByPrimaryKey(@Param("categoryId") Integer categoryId, @Param("languageId") Integer languageId);
-
-	int updateByPrimaryKeySelective(CategoryDescription record);
-
-	int updateByPrimaryKey(CategoryDescription record);
-
-    CategoryDescription selectByNameAndLanguageId(@Param("name") String name, @Param("languageId") int languageId);
+    List<OcCategoryDescription> selectByNameAndLanguageId(@Param("name") String name, @Param("languageId") int languageId);
 }

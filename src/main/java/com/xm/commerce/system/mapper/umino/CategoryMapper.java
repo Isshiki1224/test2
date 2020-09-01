@@ -1,17 +1,10 @@
 package com.xm.commerce.system.mapper.umino;
 
-import com.xm.commerce.system.model.entity.umino.Category;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.xm.commerce.system.model.entity.umino.OcCategory;
 
-public interface CategoryMapper {
-	int deleteByPrimaryKey(Integer categoryId);
+public interface CategoryMapper extends BaseMapper<OcCategory> {
 
-	int insert(Category record);
+    int insertSelective(OcCategory ocCategory);
 
-	int insertSelective(Category record);
-
-	Category selectByPrimaryKey(Integer categoryId);
-
-	int updateByPrimaryKeySelective(Category record);
-
-	int updateByPrimaryKey(Category record);
 }

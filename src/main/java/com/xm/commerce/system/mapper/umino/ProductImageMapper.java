@@ -1,17 +1,8 @@
 package com.xm.commerce.system.mapper.umino;
 
-import com.xm.commerce.system.model.entity.umino.ProductImage;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.xm.commerce.system.model.entity.umino.OcProductImage;
 
-public interface ProductImageMapper {
-	int deleteByPrimaryKey(Integer productImageId);
+public interface ProductImageMapper extends BaseMapper<OcProductImage> {
 
-	int insert(ProductImage record);
-
-	int insertSelective(ProductImage record);
-
-	ProductImage selectByPrimaryKey(Integer productImageId);
-
-	int updateByPrimaryKeySelective(ProductImage record);
-
-	int updateByPrimaryKey(ProductImage record);
 }

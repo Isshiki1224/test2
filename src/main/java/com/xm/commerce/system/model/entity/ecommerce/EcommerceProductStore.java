@@ -1,5 +1,7 @@
 package com.xm.commerce.system.model.entity.ecommerce;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
@@ -11,18 +13,19 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@ApiModel(value = "com-xm-commerce-system-model-entity-ecommerce-ProductStore")
+@ApiModel(value = "com-xm-commerce-system-model-entity-ecommerce-EcommerceProductStore")
 @Getter
 @Setter
 @ToString
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductStore {
+public class EcommerceProductStore {
     /**
      * 主键
      */
     @ApiModelProperty(value = "主键")
+    @TableId(type = IdType.AUTO)
     private Integer id;
 
     /**

@@ -1,23 +1,21 @@
 package com.xm.commerce.system.mapper.ecommerce;
 
-import com.xm.commerce.system.model.entity.ecommerce.ProductStore;import com.xm.commerce.system.model.request.CategoryRequest;import org.apache.ibatis.annotations.Param;import java.util.List;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.xm.commerce.system.model.entity.ecommerce.EcommerceProductStore;
+import com.xm.commerce.system.model.request.CategoryRequest;import org.apache.ibatis.annotations.Param;import java.util.List;
 
-public interface ProductStoreMapper {
-    int deleteByPrimaryKey(Integer id);
+public interface ProductStoreMapper extends BaseMapper<EcommerceProductStore> {
 
-    int insert(ProductStore record);
 
-    int insertSelective(ProductStore record);
-
-    ProductStore selectByPrimaryKey(Integer id);
-
-    int updateByPrimaryKeySelective(ProductStore record);
-
-    int updateByPrimaryKey(ProductStore record);
-
-    List<ProductStore> selectByCategory(CategoryRequest categoryRequest);
+    List<EcommerceProductStore> selectByCategory(CategoryRequest categoryRequest);
 
     int deleteByBatch(@Param("ids") List<Integer> ids);
 
-    int insertUploaderById(@Param("userId") Integer id, @Param("productId") Integer productId, @Param("category") Integer category);
+
+    List<EcommerceProductStore> selectByName(String productName);
+
+
+    int updateByPrimaryKeySelective(EcommerceProductStore record);
+
+
 }

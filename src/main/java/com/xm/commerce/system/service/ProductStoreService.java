@@ -3,12 +3,13 @@ package com.xm.commerce.system.service;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import com.xm.commerce.common.exception.FileUploadException;
+import com.xm.commerce.common.exception.ProductAlreadyExistException;
 import com.xm.commerce.security.util.CurrentUserUtils;
 import com.xm.commerce.system.mapper.ecommerce.ProductStoreMapper;
 import com.xm.commerce.system.model.dto.FileUploadDto;
 import com.xm.commerce.system.model.dto.PictureDto;
-import com.xm.commerce.system.model.entity.ecommerce.ProductStore;
-import com.xm.commerce.system.model.entity.ecommerce.User;
+import com.xm.commerce.system.model.entity.ecommerce.EcommerceProductStore;
+import com.xm.commerce.system.model.entity.ecommerce.EcommerceUser;
 import com.xm.commerce.system.model.request.CategoryRequest;
 import com.xm.commerce.system.model.response.ProductResponse;
 import com.xm.commerce.system.util.FileUtil;
@@ -45,18 +46,18 @@ public class ProductStoreService {
 
 
     public int deleteByPrimaryKey(Integer id) {
-        return productStoreMapper.deleteByPrimaryKey(id);
+        return productStoreMapper.deleteById(id);
     }
 
 
-    public int insert(ProductStore record) {
-        return productStoreMapper.insert(record);
-    }
+    public int insertSelective(EcommerceProductStore record) throws Exception {
 
+        List<EcommerceProductStore> ecommerceProductStores = productStoreMapper.selectByName(record.getProductName());
+        if (null != ecommerceProductStores && !ecommerceProductStores.isEmpty()){
+            throw new ProductAlreadyExistException(ImmutableMap.of("商品已经存在", record.getProductName()));
+        }
 
-    public int insertSelective(ProductStore record) throws Exception {
-
-        User user = currentUserUtils.getCurrentUser();
+        EcommerceUser ecommerceUser = currentUserUtils.getCurrentUser();
         StringBuilder sb = new StringBuilder();
         String image = record.getImage();
         List<PictureDto> pictureDtoList = new ArrayList<>();
@@ -66,16 +67,20 @@ public class ProductStoreService {
             if (!s.startsWith("http://" + ip)) {
                 InputStream inputStream = new URL(s).openStream();
                 byte[] bytes = IOUtils.toByteArray(inputStream);
-                pictureDtoList.add(new PictureDto(bytes, s));
+//                pictureDtoList.add(new PictureDto(bytes, s));
+
                 String extension = FilenameUtils.getExtension(s);
-                if (Arrays.asList(SUPPORTED_PIC_SUFFIX).contains(extension)) {
+                pictureDtoList.add(new PictureDto(bytes, extension));
+                if (!Arrays.asList(SUPPORTED_PIC_SUFFIX).contains(extension)) {
                     throw new FileUploadException(ImmutableMap.of("格式不正确", extension));
                 }
                 imgSet.remove(s);
             }
         }
-        List<FileUploadDto> fileUploadDtos = fileUtil.fileUploadByBytes(pictureDtoList, user.getUsername() + "/");
+        List<FileUploadDto> fileUploadDtos = fileUtil.fileUploadByBytes(pictureDtoList, ecommerceUser.getUsername() + "/");
         imgSet.addAll(fileUploadDtos.stream().map(FileUploadDto::getUrl).collect(Collectors.toSet()));
+
+        log.info("image" + image);
 
         if (record.getMetaTagTitle() == null || "".equals(record.getMetaTagTitle())) {
             record.setMetaTagTitle(record.getProductName());
@@ -85,42 +90,34 @@ public class ProductStoreService {
         record.setImage(String.join(",", imgSet));
         record.setDataAdded(new Date());
         record.setDataModified(new Date());
-        return productStoreMapper.insertSelective(record);
-    }
-
-
-    public ProductStore selectByPrimaryKey(Integer id) {
-        return productStoreMapper.selectByPrimaryKey(id);
+        return productStoreMapper.insert(record);
     }
 
     public ProductResponse selectRespByPrimaryKey(Integer id) {
-        ProductStore productStore = productStoreMapper.selectByPrimaryKey(id);
-        return new ProductResponse(productStore);
+        EcommerceProductStore ecommerceProductStore = productStoreMapper.selectById(id);
+        return new ProductResponse(ecommerceProductStore);
     }
 
-    public int updateByPrimaryKeySelective(ProductStore record) {
+    public int updateByPrimaryKeySelective(EcommerceProductStore record) {
         if (record.getMetaTagTitle() == null) {
             record.setMetaTagTitle(record.getProductName());
         }
         record.setDataModified(new Date());
-        return productStoreMapper.updateByPrimaryKeySelective(record);
+        return productStoreMapper.updateById(record);
     }
 
 
-    public int updateByPrimaryKey(ProductStore record) {
-        return productStoreMapper.updateByPrimaryKey(record);
-    }
 
     public List<ProductResponse> selectByCategory(CategoryRequest categoryRequest) {
-        List<ProductStore> productStores = null;
+        List<EcommerceProductStore> ecommerceProductStores = null;
 //        if (categoryRequest.getPage() != null && categoryRequest.getPageSize() != null) {
 //            PageHelper.startPage(categoryRequest.getPage(), categoryRequest.getPageSize());
-//            productStores = productStoreMapper.selectByCategory(categoryRequest);
+//            ecommerceProductStores = productStoreMapper.selectByCategory(categoryRequest);
 //        }
-        productStores = productStoreMapper.selectByCategory(categoryRequest);
+        ecommerceProductStores = productStoreMapper.selectByCategory(categoryRequest);
         List<ProductResponse> responses = new ArrayList<>();
-        productStores.forEach(productStore -> {
-            ProductResponse productResponse = new ProductResponse(productStore);
+        ecommerceProductStores.forEach(ecommerceProductStore -> {
+            ProductResponse productResponse = new ProductResponse(ecommerceProductStore);
             responses.add(productResponse);
         });
 

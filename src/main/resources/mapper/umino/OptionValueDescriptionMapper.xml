@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.xm.commerce.system.mapper.umino.OptionValueDescriptionMapper">
-  <resultMap id="BaseResultMap" type="com.xm.commerce.system.model.entity.umino.OptionValueDescription">
+  <resultMap id="BaseResultMap" type="com.xm.commerce.system.model.entity.umino.OcOptionValueDescription">
     <!--@mbg.generated-->
     <!--@Table oc_option_value_description-->
     <id column="option_value_id" jdbcType="INTEGER" property="optionValueId" />
@@ -13,81 +13,7 @@
     <!--@mbg.generated-->
     option_value_id, language_id, option_id, `name`
   </sql>
-  <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
-    <!--@mbg.generated-->
-    select 
-    <include refid="Base_Column_List" />
-    from oc_option_value_description
-    where option_value_id = #{optionValueId,jdbcType=INTEGER}
-      and language_id = #{languageId,jdbcType=INTEGER}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="map">
-    <!--@mbg.generated-->
-    delete from oc_option_value_description
-    where option_value_id = #{optionValueId,jdbcType=INTEGER}
-      and language_id = #{languageId,jdbcType=INTEGER}
-  </delete>
-  <insert id="insert" parameterType="com.xm.commerce.system.model.entity.umino.OptionValueDescription">
-    <!--@mbg.generated-->
-    insert into oc_option_value_description (option_value_id, language_id, option_id, 
-      `name`)
-    values (#{optionValueId,jdbcType=INTEGER}, #{languageId,jdbcType=INTEGER}, #{optionId,jdbcType=INTEGER}, 
-      #{name,jdbcType=VARCHAR})
-  </insert>
-  <insert id="insertSelective" parameterType="com.xm.commerce.system.model.entity.umino.OptionValueDescription">
-    <!--@mbg.generated-->
-    insert into oc_option_value_description
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="optionValueId != null">
-        option_value_id,
-      </if>
-      <if test="languageId != null">
-        language_id,
-      </if>
-      <if test="optionId != null">
-        option_id,
-      </if>
-      <if test="name != null">
-        `name`,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="optionValueId != null">
-        #{optionValueId,jdbcType=INTEGER},
-      </if>
-      <if test="languageId != null">
-        #{languageId,jdbcType=INTEGER},
-      </if>
-      <if test="optionId != null">
-        #{optionId,jdbcType=INTEGER},
-      </if>
-      <if test="name != null">
-        #{name,jdbcType=VARCHAR},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.xm.commerce.system.model.entity.umino.OptionValueDescription">
-    <!--@mbg.generated-->
-    update oc_option_value_description
-    <set>
-      <if test="optionId != null">
-        option_id = #{optionId,jdbcType=INTEGER},
-      </if>
-      <if test="name != null">
-        `name` = #{name,jdbcType=VARCHAR},
-      </if>
-    </set>
-    where option_value_id = #{optionValueId,jdbcType=INTEGER}
-      and language_id = #{languageId,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.xm.commerce.system.model.entity.umino.OptionValueDescription">
-    <!--@mbg.generated-->
-    update oc_option_value_description
-    set option_id = #{optionId,jdbcType=INTEGER},
-      `name` = #{name,jdbcType=VARCHAR}
-    where option_value_id = #{optionValueId,jdbcType=INTEGER}
-      and language_id = #{languageId,jdbcType=INTEGER}
-  </update>
+
 
   <select id="selectByNameAndLanguageId" resultMap="BaseResultMap">
     SELECT <include refid="Base_Column_List"/>

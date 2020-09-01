@@ -1,19 +1,12 @@
 package com.xm.commerce.system.mapper.ecommerce;
 
-import com.xm.commerce.system.model.entity.ecommerce.Site;import java.util.List;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.xm.commerce.system.model.entity.ecommerce.EcommerceSite;
 
-public interface SiteMapper {
-    int deleteByPrimaryKey(Integer id);
+import java.util.List;
 
-    int insert(Site record);
+public interface SiteMapper extends BaseMapper<EcommerceSite> {
 
-    int insertSelective(Site record);
 
-    Site selectByPrimaryKey(Integer id);
-
-    int updateByPrimaryKeySelective(Site record);
-
-    int updateByPrimaryKey(Site record);
-
-    List<Site> selectAll(Integer siteCategory);
+    List<EcommerceSite> selectAll(Integer siteCategory);
 }

@@ -1,21 +1,12 @@
 package com.xm.commerce.system.mapper.ecommerce;
 
-import com.xm.commerce.system.model.entity.ecommerce.Role;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.xm.commerce.system.model.entity.ecommerce.EcommerceRole;
 
 import java.util.List;
 
-public interface RoleMapper {
-    int deleteByPrimaryKey(Integer id);
+public interface RoleMapper extends BaseMapper<EcommerceRole> {
 
-    int insert(Role record);
 
-    int insertSelective(Role record);
-
-    Role selectByPrimaryKey(Integer id);
-
-    int updateByPrimaryKeySelective(Role record);
-
-    int updateByPrimaryKey(Role record);
-
-    List<Role> findByUserId(int userId);
+    List<EcommerceRole> findByUserId(int userId);
 }

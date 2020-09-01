@@ -1,9 +1,9 @@
 package com.xm.commerce.system.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.xm.commerce.system.model.entity.ecommerce.Permission;
-import com.xm.commerce.system.model.entity.ecommerce.Role;
-import com.xm.commerce.system.model.entity.ecommerce.User;
+import com.xm.commerce.system.model.entity.ecommerce.EcommercePermission;
+import com.xm.commerce.system.model.entity.ecommerce.EcommerceRole;
+import com.xm.commerce.system.model.entity.ecommerce.EcommerceUser;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,24 +31,24 @@ public class UserDto {
 
 	private Boolean enabled;
 
-	private List<Role> roles;
-	private List<Permission> permissions;
+	private List<EcommerceRole> ecommerceRoles;
+	private List<EcommercePermission> ecommercePermissions;
 
-	public UserDto(User user, List<Role> roles, List<Permission> permissions) {
-		this.id = user.getId();
-		this.username = user.getUsername();
-		this.nickname = user.getNickname();
-		this.password = user.getPassword();
-		this.enabled = user.getEnabled();
-		this.roles = roles;
-		this.permissions = permissions;
+	public UserDto(EcommerceUser ecommerceUser, List<EcommerceRole> ecommerceRoles, List<EcommercePermission> ecommercePermissions) {
+		this.id = ecommerceUser.getId();
+		this.username = ecommerceUser.getUsername();
+		this.nickname = ecommerceUser.getNickname();
+		this.password = ecommerceUser.getPassword();
+		this.enabled = ecommerceUser.getEnabled();
+		this.ecommerceRoles = ecommerceRoles;
+		this.ecommercePermissions = ecommercePermissions;
 	}
 
 	@JsonIgnore
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-		roles.forEach(r -> authorities.add(new SimpleGrantedAuthority("ROLE_" + r.getCode())));
-		permissions.forEach(p -> authorities.add(new SimpleGrantedAuthority(p.getCode())));
+		ecommerceRoles.forEach(r -> authorities.add(new SimpleGrantedAuthority("ROLE_" + r.getCode())));
+		ecommercePermissions.forEach(p -> authorities.add(new SimpleGrantedAuthority(p.getCode())));
 		return authorities;
 	}
 }

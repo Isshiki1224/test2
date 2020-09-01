@@ -17,7 +17,7 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
      */
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException {
-        accessDeniedException = new AccessDeniedException("Sorry you don not enough permissions to access it!");
+        accessDeniedException = new AccessDeniedException("Sorry you don not enough ecommercePermissions to access it!");
         response.sendError(HttpServletResponse.SC_FORBIDDEN, accessDeniedException.getMessage());
     }
 }

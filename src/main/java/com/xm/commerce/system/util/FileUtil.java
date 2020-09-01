@@ -11,8 +11,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import static com.xm.commerce.system.constant.EcommerceConstant.SUPPORTED_PIC_SUFFIX;
 
 @Component
 public class FileUtil {
@@ -29,6 +32,10 @@ public class FileUtil {
 		String suffixName = FilenameUtils.getExtension(oldFilename);
 		if (suffixName == null) {
 			throw new ResourceNotFoundException();
+		}
+		String extension = FilenameUtils.getExtension(oldFilename);
+		if (!Arrays.asList(SUPPORTED_PIC_SUFFIX).contains(extension)) {
+			throw new FileUploadException(ImmutableMap.of("格式不正确", extension));
 		}
 		byte[] bytes = multipartFiles.getBytes();
 		return FtpUtils.uploadFile(ftpConfigReader.getMap(), Collections.singletonList(new PictureDto(bytes, FilenameUtils.getExtension(oldFilename))), uploadDir).get(0);

@@ -1,20 +1,13 @@
 package com.xm.commerce.system.mapper.umino;
 
-import com.xm.commerce.system.model.entity.umino.OptionValueDescription;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.xm.commerce.system.model.entity.umino.OcOptionValueDescription;
 import org.apache.ibatis.annotations.Param;
 
-public interface OptionValueDescriptionMapper {
-	int deleteByPrimaryKey(@Param("optionValueId") Integer optionValueId, @Param("languageId") Integer languageId);
+import java.util.List;
 
-	int insert(OptionValueDescription record);
+public interface OptionValueDescriptionMapper extends BaseMapper<OcOptionValueDescription> {
 
-	int insertSelective(OptionValueDescription record);
 
-	OptionValueDescription selectByPrimaryKey(@Param("optionValueId") Integer optionValueId, @Param("languageId") Integer languageId);
-
-	int updateByPrimaryKeySelective(OptionValueDescription record);
-
-	int updateByPrimaryKey(OptionValueDescription record);
-
-    OptionValueDescription selectByNameAndLanguageId(@Param("name") String name, @Param("languageId") int languageId);
+    List<OcOptionValueDescription> selectByNameAndLanguageId(@Param("name") String name, @Param("languageId") int languageId);
 }

@@ -1,6 +1,6 @@
 package com.xm.commerce.system.controller;
 
-import com.xm.commerce.system.model.entity.ecommerce.Site;
+import com.xm.commerce.system.model.entity.ecommerce.EcommerceSite;
 import com.xm.commerce.system.model.response.ResponseData;
 import com.xm.commerce.system.service.SiteService;
 import org.springframework.web.bind.annotation.*;
@@ -14,25 +14,25 @@ public class SiteController {
     SiteService siteService;
 
     @PostMapping("/site/add")
-    public ResponseData addOrUpdate(@RequestBody Site site) {
-        if (site.getId() == null) {
-            siteService.insertSelective(site);
+    public ResponseData addOrUpdate(@RequestBody EcommerceSite ecommerceSite) {
+        if (ecommerceSite.getId() == null) {
+            siteService.insertSelective(ecommerceSite);
         } else {
-            siteService.updateByPrimaryKeySelective(site);
+            siteService.updateByPrimaryKeySelective(ecommerceSite);
         }
         return new ResponseData("新增成功", 200);
     }
 
     @GetMapping("/site/{id}")
     public ResponseData getSite(@PathVariable Integer id) {
-        Site site = siteService.selectByPrimaryKey(id);
-        return new ResponseData("", 200, site);
+        EcommerceSite ecommerceSite = siteService.selectByPrimaryKey(id);
+        return new ResponseData("", 200, ecommerceSite);
     }
 
     @GetMapping("/sites")
     public ResponseData sites(Integer siteCategory) {
-        List<Site> sites = siteService.selectAll(siteCategory);
-        return new ResponseData("", 200, sites);
+        List<EcommerceSite> ecommerceSites = siteService.selectAll(siteCategory);
+        return new ResponseData("", 200, ecommerceSites);
     }
 
     @PostMapping("/site/{id}")

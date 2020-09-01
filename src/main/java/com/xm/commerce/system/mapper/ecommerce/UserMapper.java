@@ -1,21 +1,12 @@
 package com.xm.commerce.system.mapper.ecommerce;
 
-import com.xm.commerce.system.model.entity.ecommerce.User;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.xm.commerce.system.model.entity.ecommerce.EcommerceUser;
 
 import java.util.Optional;
 
-public interface UserMapper {
-    int deleteByPrimaryKey(Integer id);
+public interface UserMapper extends BaseMapper<EcommerceUser> {
 
-    int insert(User record);
 
-    int insertSelective(User record);
-
-    User selectByPrimaryKey(Integer id);
-
-    int updateByPrimaryKeySelective(User record);
-
-    int updateByPrimaryKey(User record);
-
-    Optional<User> findByUsername(String username);
+    Optional<EcommerceUser> findByUsername(String username);
 }

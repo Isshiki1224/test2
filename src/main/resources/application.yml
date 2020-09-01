@@ -1,20 +1,20 @@
 server:
   servlet:
     context-path: /ecommerce
+  port: 8080
 
 spring:
   #mysql&mybatis
   datasource:
-    ecommerce:
-      driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://10.10.10.22:3306/local_product?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8
-      username: root
-      password: root
-    umino:
-      driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://10.10.10.22:3306/umino?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8
-      username: root
-      password: root
+    dynamic:
+      datasource:
+        master:
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://10.10.10.22:3306/local_product?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8
+          username: root
+          password: root
+      primary: master
+
   redis:
     cluster:
       nodes:
@@ -34,15 +34,15 @@ jwt:
   secretKey: C*F-JaNdRgUkXn2r5u8x/A?D(G+KbPeShVmYq3s6v9y$B&E)H@McQfTjWnZr4u7w
 
 ftp:
-  ip: 10.10.10.28
-  user: c
-  password: 895684
+  ip: 180.76.108.173
+  user: root
+  password: xiaomeng123!
   port: 22
   filePath: /ecommerce/
   parentFilePath: publicFileUpload
-  domain: 10.10.10.28
-  prvKeyFilePath: /Users/c/Desktop/140.82.46.209-NewYork/picUser/id_rsa
-  pubKeyFilePath: /Users/c/Desktop/140.82.46.209-NewYork/picUser/id_rsa.pub
+  domain: http://m.dian7.net
+#  prvKeyFilePath: /Users/c/Desktop/140.82.46.209-NewYork/picUser/id_rsa
+#  pubKeyFilePath: /Users/c/Desktop/140.82.46.209-NewYork/picUser/id_rsa.pub
 
 logging:
   level:

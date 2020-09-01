@@ -17,6 +17,8 @@ public enum ExceptionCode {
     CREATE_FOLDER_EXCEPTION(12, HttpStatus.BAD_REQUEST, "商品入站失败，商品文件存放目录不存在"),
     VARIANT_EXIST(19, HttpStatus.BAD_REQUEST, "variant exists"),
     REST_TEMPLATE(21, HttpStatus.BAD_REQUEST, "restTemplate Exception"),
+    PRODUCT_ALREADY_EXIST(25, HttpStatus.BAD_REQUEST, "商品已经存在"),
+    SITE_MESSAGE(26, HttpStatus.BAD_REQUEST, "站点信息有误"),
     SFTP_CONNECT_EXCEPTION(20, HttpStatus.INTERNAL_SERVER_ERROR, "文件服务器无法连接");
 
 

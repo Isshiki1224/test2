@@ -1,23 +1,14 @@
 package com.xm.commerce.system.mapper.ecommerce;
 
-import com.xm.commerce.system.model.entity.ecommerce.Categorie;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.xm.commerce.system.model.entity.ecommerce.EcommerceCategory;
 
 import java.util.List;
 
-public interface CategorieMapper {
-    int deleteByPrimaryKey(Integer id);
+public interface CategorieMapper extends BaseMapper<EcommerceCategory> {
 
-    int insert(Categorie record);
 
-    int insertSelective(Categorie record);
+    List<EcommerceCategory> findCategorieByName(String name);
 
-    Categorie selectByPrimaryKey(Integer id);
-
-    int updateByPrimaryKeySelective(Categorie record);
-
-    int updateByPrimaryKey(Categorie record);
-
-    List<Categorie> findCategorieByName(String name);
-
-    Categorie selectByName(String name);
+    EcommerceCategory selectByName(String name);
 }

@@ -1,5 +1,7 @@
 package com.xm.commerce.system.model.entity.ecommerce;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -9,18 +11,19 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@ApiModel(value = "com-xm-commerce-system-model-entity-ecommerce-Site")
+@ApiModel(value = "com-xm-commerce-system-model-entity-ecommerce-EcommerceSite")
 @Getter
 @Setter
 @ToString
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Site {
+public class EcommerceSite {
     /**
      * 主键
      */
     @ApiModelProperty(value = "主键")
+    @TableId(type = IdType.AUTO)
     private Integer id;
 
     /**
@@ -54,16 +57,34 @@ public class Site {
     private String port;
 
     /**
-     * 账号
+     * opencart账号
      */
-    @ApiModelProperty(value = "账号")
+    @ApiModelProperty(value = "opencart账号")
     private String account;
 
     /**
-     * 密码
+     * opencart密码
      */
-    @ApiModelProperty(value = "密码")
+    @ApiModelProperty(value = "opencart密码")
     private String password;
+
+    /**
+     * 数据库名称
+     */
+    @ApiModelProperty(value = "数据库名称")
+    private String dbName;
+
+    /**
+     * 数据库用户名
+     */
+    @ApiModelProperty(value = "数据库用户名")
+    private String dbUsername;
+
+    /**
+     * 数据库密码
+     */
+    @ApiModelProperty(value = "数据库密码")
+    private String dbPassword;
 
     /**
      * shopify  api

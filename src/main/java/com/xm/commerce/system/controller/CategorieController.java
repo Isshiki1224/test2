@@ -1,6 +1,6 @@
 package com.xm.commerce.system.controller;
 
-import com.xm.commerce.system.model.entity.ecommerce.Categorie;
+import com.xm.commerce.system.model.entity.ecommerce.EcommerceCategory;
 import com.xm.commerce.system.model.response.ResponseCode;
 import com.xm.commerce.system.model.response.ResponseData;
 import com.xm.commerce.system.service.CategoryService;
@@ -22,7 +22,7 @@ public class CategorieController {
 
 	@GetMapping("searchCategory")
 	public ResponseData searchCategoryByName(String name) {
-		List<Categorie> categories = categoryService.searchCategory(name);
+		List<EcommerceCategory> categories = categoryService.searchCategory(name);
 		return new ResponseData(ResponseCode.SUCCESS, categories);
 	}
 }
