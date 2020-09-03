@@ -28,6 +28,13 @@ public class EcommerceProductStore {
     @TableId(type = IdType.AUTO)
     private Integer id;
 
+
+    /**
+     * 用户ID
+     */
+    @ApiModelProperty(value = "用户ID")
+    private Integer uid;
+
     /**
      * 产品名称
      */

@@ -5,6 +5,7 @@
     <!--@mbg.generated-->
     <!--@Table ecommerce_site-->
     <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="uid" jdbcType="VARCHAR" property="uid" />
     <result column="site_name" jdbcType="VARCHAR" property="siteName" />
     <result column="site_category" jdbcType="BOOLEAN" property="siteCategory" />
     <result column="ip" jdbcType="VARCHAR" property="ip" />
@@ -21,12 +22,152 @@
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, site_name, site_category, ip, `domain`, port, account, `password`, db_name, db_username, 
+    id, uid, site_name, site_category, ip, `domain`, port, account, `password`, db_name, db_username,
     db_password, api, api_key, api_password
   </sql>
 
   <select id="selectAll" resultMap="BaseResultMap">
     select <include refid="Base_Column_List" /> from ecommerce_site
-    where site_category = #{siteCategory}
+    where site_category = #{siteCategory} and uid = #{uid}
   </select>
+
+
+
+
+
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.xm.commerce.system.model.entity.ecommerce.EcommerceSite" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into ecommerce_site
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="siteName != null">
+        site_name,
+      </if>
+      <if test="siteCategory != null">
+        site_category,
+      </if>
+      <if test="ip != null">
+        ip,
+      </if>
+      <if test="domain != null">
+        `domain`,
+      </if>
+      <if test="port != null">
+        port,
+      </if>
+      <if test="account != null">
+        account,
+      </if>
+      <if test="password != null">
+        `password`,
+      </if>
+      <if test="dbName != null">
+        db_name,
+      </if>
+      <if test="dbUsername != null">
+        db_username,
+      </if>
+      <if test="dbPassword != null">
+        db_password,
+      </if>
+      <if test="api != null">
+        api,
+      </if>
+      <if test="apiKey != null">
+        api_key,
+      </if>
+      <if test="apiPassword != null">
+        api_password,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="siteName != null">
+        #{siteName,jdbcType=VARCHAR},
+      </if>
+      <if test="siteCategory != null">
+        #{siteCategory,jdbcType=BOOLEAN},
+      </if>
+      <if test="ip != null">
+        #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="domain != null">
+        #{domain,jdbcType=VARCHAR},
+      </if>
+      <if test="port != null">
+        #{port,jdbcType=VARCHAR},
+      </if>
+      <if test="account != null">
+        #{account,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="dbName != null">
+        #{dbName,jdbcType=VARCHAR},
+      </if>
+      <if test="dbUsername != null">
+        #{dbUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="dbPassword != null">
+        #{dbPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="api != null">
+        #{api,jdbcType=VARCHAR},
+      </if>
+      <if test="apiKey != null">
+        #{apiKey,jdbcType=VARCHAR},
+      </if>
+      <if test="apiPassword != null">
+        #{apiPassword,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.xm.commerce.system.model.entity.ecommerce.EcommerceSite">
+    <!--@mbg.generated-->
+    update ecommerce_site
+    <set>
+      <if test="siteName != null">
+        site_name = #{siteName,jdbcType=VARCHAR},
+      </if>
+      <if test="siteCategory != null">
+        site_category = #{siteCategory,jdbcType=BOOLEAN},
+      </if>
+      <if test="ip != null">
+        ip = #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="domain != null">
+        `domain` = #{domain,jdbcType=VARCHAR},
+      </if>
+      <if test="port != null">
+        port = #{port,jdbcType=VARCHAR},
+      </if>
+      <if test="account != null">
+        account = #{account,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        `password` = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="dbName != null">
+        db_name = #{dbName,jdbcType=VARCHAR},
+      </if>
+      <if test="dbUsername != null">
+        db_username = #{dbUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="dbPassword != null">
+        db_password = #{dbPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="api != null">
+        api = #{api,jdbcType=VARCHAR},
+      </if>
+      <if test="apiKey != null">
+        api_key = #{apiKey,jdbcType=VARCHAR},
+      </if>
+      <if test="apiPassword != null">
+        api_password = #{apiPassword,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+
 </mapper>

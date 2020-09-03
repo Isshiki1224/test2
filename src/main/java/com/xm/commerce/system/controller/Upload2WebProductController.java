@@ -5,6 +5,7 @@ import com.xm.commerce.security.util.CurrentUserUtils;
 import com.xm.commerce.system.model.entity.ecommerce.EcommerceProductStore;
 import com.xm.commerce.system.model.entity.ecommerce.EcommerceUser;
 import com.xm.commerce.system.model.request.UploadRequest;
+import com.xm.commerce.system.model.request.UploadTaskRequest;
 import com.xm.commerce.system.model.response.ProductResponse;
 import com.xm.commerce.system.model.response.ResponseCode;
 import com.xm.commerce.system.model.response.ResponseData;
@@ -47,7 +48,14 @@ public class Upload2WebProductController {
         Map<String, Object> tokenAndCookies = upload2WebProductService.login2OpenCart(uploadRequest);
         EcommerceProductStore productStore = upload2WebProductService.uploadPic2OpenCart(uploadRequest, tokenAndCookies);
         boolean result = upload2WebProductService.upload2OpenCart(productStore, currentUser,uploadRequest.getSiteId());
+
         return new ResponseData(productStore.getProductName() + "商品入站成功", ResponseCode.SUCCESS );
+    }
+
+    @PostMapping("/toOpenCart1")
+    public ResponseData BatchUpload2OpenCart(@RequestBody UploadTaskRequest request) throws Exception {
+        upload2WebProductService.BatchUpload2OpenCart(request);
+        return new ResponseData("商品入站成功", ResponseCode.SUCCESS );
     }
 
 

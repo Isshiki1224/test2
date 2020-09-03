@@ -2,6 +2,7 @@ package com.xm.commerce.system.service;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
+import com.xm.commerce.common.exception.CurrentUserException;
 import com.xm.commerce.common.exception.FileUploadException;
 import com.xm.commerce.common.exception.ProductAlreadyExistException;
 import com.xm.commerce.security.util.CurrentUserUtils;
@@ -45,6 +46,15 @@ public class ProductStoreService {
     private String ip;
 
 
+
+    public EcommerceUser getUser(){
+        EcommerceUser user = currentUserUtils.getCurrentUser();
+        if (user == null){
+            throw new CurrentUserException();
+        }
+        return user;
+    }
+
     public int deleteByPrimaryKey(Integer id) {
         return productStoreMapper.deleteById(id);
     }
@@ -53,11 +63,11 @@ public class ProductStoreService {
     public int insertSelective(EcommerceProductStore record) throws Exception {
 
         List<EcommerceProductStore> ecommerceProductStores = productStoreMapper.selectByName(record.getProductName());
-        if (null != ecommerceProductStores && !ecommerceProductStores.isEmpty()){
+        if (null != ecommerceProductStores && !ecommerceProductStores.isEmpty()) {
             throw new ProductAlreadyExistException(ImmutableMap.of("商品已经存在", record.getProductName()));
         }
 
-        EcommerceUser ecommerceUser = currentUserUtils.getCurrentUser();
+        EcommerceUser ecommerceUser = getUser();
         StringBuilder sb = new StringBuilder();
         String image = record.getImage();
         List<PictureDto> pictureDtoList = new ArrayList<>();
@@ -85,12 +95,13 @@ public class ProductStoreService {
         if (record.getMetaTagTitle() == null || "".equals(record.getMetaTagTitle())) {
             record.setMetaTagTitle(record.getProductName());
         }
+        record.setUid(ecommerceUser.getId());
         record.setUploadOpencart(false);
         record.setUploadShopify(false);
         record.setImage(String.join(",", imgSet));
         record.setDataAdded(new Date());
         record.setDataModified(new Date());
-        return productStoreMapper.insert(record);
+        return productStoreMapper.insertSelective(record);
     }
 
     public ProductResponse selectRespByPrimaryKey(Integer id) {
@@ -99,13 +110,14 @@ public class ProductStoreService {
     }
 
     public int updateByPrimaryKeySelective(EcommerceProductStore record) {
+        EcommerceUser user = getUser();
         if (record.getMetaTagTitle() == null) {
             record.setMetaTagTitle(record.getProductName());
         }
+        record.setUid(user.getId());
         record.setDataModified(new Date());
-        return productStoreMapper.updateById(record);
+        return productStoreMapper.updateByPrimaryKeySelective(record);
     }
-
 
 
     public List<ProductResponse> selectByCategory(CategoryRequest categoryRequest) {
@@ -114,6 +126,8 @@ public class ProductStoreService {
 //            PageHelper.startPage(categoryRequest.getPage(), categoryRequest.getPageSize());
 //            ecommerceProductStores = productStoreMapper.selectByCategory(categoryRequest);
 //        }
+        EcommerceUser user = getUser();
+        categoryRequest.setUid(user.getId());
         ecommerceProductStores = productStoreMapper.selectByCategory(categoryRequest);
         List<ProductResponse> responses = new ArrayList<>();
         ecommerceProductStores.forEach(ecommerceProductStore -> {

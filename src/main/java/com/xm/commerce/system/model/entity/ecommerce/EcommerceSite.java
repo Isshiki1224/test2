@@ -26,6 +26,13 @@ public class EcommerceSite {
     @TableId(type = IdType.AUTO)
     private Integer id;
 
+
+    /**
+     * 用户id
+     */
+    @ApiModelProperty(value = "用户ID")
+    private Integer uid;
+
     /**
      * 站点名称
      */

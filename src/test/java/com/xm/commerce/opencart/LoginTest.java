@@ -1,7 +1,18 @@
 package com.xm.commerce.opencart;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.xm.commerce.system.constant.RedisConstant;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.checkerframework.checker.units.qual.A;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -11,8 +22,10 @@ import org.springframework.web.client.RestTemplate;
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
-
-@SpringBootTest
+import java.util.ArrayList;
+import java.util.List;
+//
+//@SpringBootTest
 
 public class LoginTest {
 
@@ -93,5 +106,41 @@ public class LoginTest {
         Thread th = new Thread(() -> System.out.println("jvm结束了。。。"));
         //设置监听线程
         Runtime.getRuntime().addShutdownHook(th);
+    }
+
+
+    @Resource
+    private RedisTemplate<String, Object> redisTemplate;
+
+    @Test
+    public void tesst() {
+        List<Integer> l = new ArrayList<>();
+        for (int i = 0; i < 100; i++) {
+            l.add(i);
+        }
+
+        redisTemplate.opsForList().rightPushAll(RedisConstant.UPLOAD_TASK_LIST_KEY, l.toArray());
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class S {
+        private String name;
+        private Integer age;
+    }
+
+    @Test
+    public void tessst() throws JsonProcessingException {
+        List<S> ss = new ArrayList<>();
+        ss.add(new S("name1", 1));
+        ss.add(new S("name2", 2));
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String s = "[{\"name\":\"name1\",\"age\":1},{\"name\":\"name2\",\"age\":2}]";
+//        System.out.println(objectMapper.writeValueAsString(ss));
+        List list = objectMapper.readValue(s, List.class);
+        System.out.println(list);
     }
 }

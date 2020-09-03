@@ -64,6 +64,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/swagger-ui/**",
                         "/swagger-resources/**",
                         "/v3/**").permitAll()
+                .antMatchers("/uploadTask/*").permitAll()
                 // 指定路径下的资源需要验证了的用户才能访问
                 .antMatchers("/**").authenticated()
                 .and()

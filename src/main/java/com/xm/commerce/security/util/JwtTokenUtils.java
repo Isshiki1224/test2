@@ -37,7 +37,7 @@ public class JwtTokenUtils {
 
     public boolean isTokenExpired(String token) {
         Date expiredDate = getTokenBody(token).getExpiration();
-        return expiredDate.before(new Date());
+        return expiredDate.after(new Date());
     }
 
     public String getUsernameByToken(String token) {

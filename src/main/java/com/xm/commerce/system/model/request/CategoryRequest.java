@@ -15,5 +15,6 @@ public class CategoryRequest {
     private String productName;
     private Integer byAddTime;
     private Integer byPrice;
+    private Integer uid;
 
 }

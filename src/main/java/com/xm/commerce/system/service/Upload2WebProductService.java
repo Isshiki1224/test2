@@ -8,6 +8,8 @@ import com.xm.commerce.common.exception.CurrentUserException;
 import com.xm.commerce.common.exception.FileUploadException;
 import com.xm.commerce.common.exception.ResourceNotFoundException;
 import com.xm.commerce.common.exception.SiteNotFoundException;
+import com.xm.commerce.security.util.CurrentUserUtils;
+import com.xm.commerce.system.constant.RedisConstant;
 import com.xm.commerce.system.mapper.ecommerce.CategorieMapper;
 import com.xm.commerce.system.mapper.ecommerce.ProductStoreMapper;
 import com.xm.commerce.system.mapper.ecommerce.SiteMapper;
@@ -40,7 +42,10 @@ import com.xm.commerce.system.model.entity.umino.OcProductOption;
 import com.xm.commerce.system.model.entity.umino.OcProductOptionValue;
 import com.xm.commerce.system.model.entity.umino.OcProductToCategory;
 import com.xm.commerce.system.model.request.UploadRequest;
+import com.xm.commerce.system.model.request.UploadTaskRequest;
+import com.xm.commerce.system.model.response.UploadTaskResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Base64;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +72,7 @@ import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -77,6 +83,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -118,11 +125,41 @@ public class Upload2WebProductService {
     LoadDataSourceUtil loadDataSourceUtil;
     @Resource
     Upload2WebProductService upload2WebProductService;
+    @Resource
+    RedisTemplate<String, Object> redisTemplate;
+    @Resource
+    CurrentUserUtils currentUserUtils;
 
     private static final String SHOPIFY_URL = "https://bestrylife.myshopify.com/admin/api/2020-07/products.json";
     private static final String SHOPIFY_TOKEN = "Basic ZDM1MWU0ZDkzNzY1ZmYzNDc1Y2I1MGVjYjM0MDIzYjU6c2hwcGFfYTUyMTdmYTU0YWQ0NWEwN2JhNjVkZWQxN2VhYWJmYzM=";
     private static final String OPEN_CART_REDIRECT = "https://www.asmater.com/admin/index.php?route=common/login";
     private static final String DIRECTORY_NOT_EXIST = "Warning: Directory does not exist!";
+
+
+    public void BatchUpload2OpenCart(UploadTaskRequest request) throws Exception {
+
+        EcommerceUser currentUser = currentUserUtils.getCurrentUser();
+        if (null == currentUser) {
+            throw new CurrentUserException();
+        }
+        List<EcommerceProductStore> productsList = productStoreMapper.selectByIds(request.getIds());
+        EcommerceSite site = siteMapper.selectById(request.getSiteId());
+        UploadTaskResponse build = UploadTaskResponse.builder()
+                .site(site)
+                .taskId(currentUser.getId() + UUID.randomUUID().toString())
+                .taskTime(new Date())
+                .uid(currentUser.getId())
+                .taskStatus(0)
+                .username(currentUser.getUsername())
+                .productList(productsList)
+                .build();
+
+//        Map<String, String> taskMap = BeanUtils.describe(build);
+
+//        redisTemplate.opsForHash().putAll(build.getTaskId(), taskMap);
+        redisTemplate.opsForValue().set(RedisConstant.UPLOAD_TASK_PREFIX + build.getTaskId(), build);
+        redisTemplate.opsForList().rightPush(RedisConstant.UPLOAD_TASK_LIST_KEY, build.getTaskId());
+    }
 
     @SuppressWarnings(value = {"rawtypes"})
     public boolean upload2OpenCart(EcommerceProductStore productStore, EcommerceUser currentUser, Integer siteId) {
@@ -366,6 +403,7 @@ public class Upload2WebProductService {
 
     @Autowired
     DataSource dataSource;
+
     @DS("#siteDbName")
     public Integer insertProduct(EcommerceProductStore productStore, String siteDbName) {
         OcProduct product = OcProduct.builder()
@@ -413,10 +451,10 @@ public class Upload2WebProductService {
             throw new SiteNotFoundException();
         }
 
-//        String authorization = site.getApiKey() + ":" + site.getApiPassword();
-//        Base64 base64 = new Base64();
-//        String base64Token = base64.encodeToString(authorization.getBytes("UTF-8"));
-//        String token = "Basic " + base64Token;
+        String authorization = site.getApiKey() + ":" + site.getApiPassword();
+        Base64 base64 = new Base64();
+        String base64Token = base64.encodeToString(authorization.getBytes(StandardCharsets.UTF_8));
+        String token = "Basic " + base64Token;
 
 
         EcommerceProductStore productStore = productStoreMapper.selectById(productId);
@@ -488,7 +526,8 @@ public class Upload2WebProductService {
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        httpHeaders.set("Authorization", SHOPIFY_TOKEN);
+//        httpHeaders.set("Authorization", SHOPIFY_TOKEN);
+        httpHeaders.set("Authorization", token);
         HttpEntity<Map<String, Map<String, Object>>> request = new HttpEntity<>(productParam, httpHeaders);
         ResponseEntity<String> resp;
 
@@ -548,11 +587,11 @@ public class Upload2WebProductService {
         Integer productId = uploadRequest.getProductId();
         Integer siteId = uploadRequest.getSiteId();
         EcommerceProductStore productStore = productStoreMapper.selectById(productId);
-        if (productStore == null){
+        if (productStore == null) {
             throw new ResourceNotFoundException();
         }
         EcommerceSite site = siteMapper.selectById(siteId);
-        if (site == null){
+        if (site == null) {
             throw new ResourceNotFoundException();
         }
 
@@ -727,6 +766,250 @@ public class Upload2WebProductService {
             throw new CurrentUserException();
         }
         return result;
+    }
+
+
+    public Map<String, Object> login2OpenCart(EcommerceSite site) {
+
+
+        String domain = site.getDomain();
+        String url = domain + "?route=common/login";
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.set("content-type", "multipart/form-data; boundary=----WebKitFormBoundaryz3cn3BLSkyswVbLY");
+        httpHeaders.set("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
+        httpHeaders.set("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36");
+
+        MultiValueMap<String, String> loginParam = new LinkedMultiValueMap<>();
+        loginParam.add("username", site.getAccount());
+        loginParam.add("password", site.getPassword());
+        loginParam.add("redirect", OPEN_CART_REDIRECT);
+
+        HttpEntity request = new HttpEntity(loginParam, httpHeaders);
+        ResponseEntity<String> response = null;
+        try {
+            response = restTemplate.postForEntity(url, request, String.class);
+        } catch (Exception e) {
+            log.info(e.getMessage());
+            throw new SiteNotFoundException(ImmutableMap.of("站点错误", ""));
+        }
+        URI location = response.getHeaders().getLocation();
+        List<String> cookie = response.getHeaders().get("Set-Cookie");
+        String token;
+        HashMap<String, Object> result = new HashMap<>();
+        if (location != null && cookie != null) {
+            log.info("登陆成功");
+            String path = location.toString();
+            token = path.substring(path.lastIndexOf("user_token=") + "user_token=".length());
+            log.info(token);
+            log.info(cookie.toString());
+            result.put("token", token);
+            result.put("Cookie", cookie);
+        } else {
+            throw new CurrentUserException();
+        }
+        return result;
+    }
+
+    public boolean upload2Shopify(EcommerceProductStore productStore, EcommerceSite site, Integer uid) throws Exception {
+
+//        Integer productId = uploadRequest.getProductId();
+//        Integer siteId = uploadRequest.getSiteId();
+//        EcommerceSite site = siteMapper.selectById(siteId);
+        if (site.getApi() == null) {
+            throw new SiteNotFoundException();
+        }
+
+        String authorization = site.getApiKey() + ":" + site.getApiPassword();
+        Base64 base64 = new Base64();
+        String base64Token = base64.encodeToString(authorization.getBytes(StandardCharsets.UTF_8));
+        String token = "Basic " + base64Token;
+        log.info("authorization= " + token);
+
+
+//        EcommerceProductStore productStore = productStoreMapper.selectById(productId);
+        String productOptions = productStore.getProductOptions();
+        JSONObject jsonObject = new JSONObject(productOptions);
+        Iterator<String> keys = jsonObject.keys();
+        List<Map<String, Object>> options = new ArrayList<>();
+        while (keys.hasNext()) {
+            String name = keys.next();
+            Object optionsValue = jsonObject.get(name);
+            Map<String, Object> option = new HashMap<>();
+            option.put("name", name);
+            option.put("values", optionsValue);
+            options.add(option);
+        }
+
+//        List<Object> lists = new ArrayList<>();
+
+        JSONArray lists = new JSONArray();
+        options.forEach(map -> lists.put(map.get("values")));
+
+        JSONArray variantsList = getVariantsList(lists);
+
+        List<Object> result = Collections.singletonList(variantsList);
+
+        List<Map<String, Object>> variants = new ArrayList<>();
+        Object o = result.get(0);
+        JSONArray array = (JSONArray) o;
+        List<Map<String, Object>> finalVariants = variants;
+        array.forEach(s -> {
+            Map<String, Object> variant = new HashMap<>();
+            if (s instanceof JSONArray) {
+                JSONArray ss = (JSONArray) s;
+                for (int i = 0; i < ss.length(); i++) {
+                    variant.put("option" + (i + 1), ss.get(i));
+                }
+            } else {
+                variant.put("option1", s);
+            }
+            variant.put("price", productStore.getPrice());
+            variant.put("inventory_quantity", productStore.getQuantity());
+            variant.put("sku", productStore.getSku());
+            finalVariants.add(variant);
+        });
+
+        variants = variants.stream().distinct().collect(Collectors.toList());
+
+
+        List<Map<String, String>> images = new ArrayList<>();
+        for (String image : productStore.getImage().split(",")) {
+            Map<String, String> temp = new HashMap<>();
+            temp.put("src", image);
+            images.add(temp);
+        }
+
+        Map<String, Map<String, Object>> productParam = new HashMap<>();
+        Map<String, Object> mapParam = new HashMap<>();
+        mapParam.put("title", productStore.getProductName());
+        mapParam.put("body_html", productStore.getDescription());
+        mapParam.put("vendor", "Bestrylife");
+        mapParam.put("product_type", productStore.getCategory());
+        mapParam.put("tags", productStore.getCategory());
+        mapParam.put("images", images);
+        mapParam.put("variants", variants);
+        mapParam.put("options", options);
+        productParam.put("product", mapParam);
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+//        httpHeaders.set("Authorization", SHOPIFY_TOKEN);
+        httpHeaders.set("Authorization", token);
+        HttpEntity<Map<String, Map<String, Object>>> request = new HttpEntity<>(productParam, httpHeaders);
+        ResponseEntity<String> resp;
+
+        try {
+            resp = restTemplate.postForEntity(site.getApi(), request, String.class);
+        } catch (Exception e) {
+            log.info("resttemplate异常===" + e.getMessage());
+            throw new SiteNotFoundException(ImmutableMap.of(productStore.getProductName() + "商品入站站点信息错误", site.getApi()));
+        }
+
+        if (!resp.getStatusCode().equals(HttpStatus.CREATED)) {
+            throw new FileUploadException();
+        }
+        productStoreMapper.updateById(EcommerceProductStore.builder()
+                .id(productStore.getId())
+                .uploadShopifyBy(uid)
+                .uploadShopify(true)
+                .build());
+        log.info("入站成功");
+        return true;
+    }
+
+    public EcommerceProductStore uploadPic2OpenCart(EcommerceProductStore productStore, EcommerceSite site, Map<String, Object> tokenAndCookies) throws IOException {
+
+//        Integer productId = uploadRequest.getProductId();
+//        Integer siteId = uploadRequest.getSiteId();
+//        EcommerceProductStore productStore = productStoreMapper.selectById(productId);
+//        if (productStore == null) {
+//            throw new ResourceNotFoundException();
+//        }
+//        EcommerceSite site = siteMapper.selectById(siteId);
+//        if (site == null) {
+//            throw new ResourceNotFoundException();
+//        }
+
+        String domain = site.getDomain();
+        String directory = site.getSiteName();
+//        String url = domain + "?route=common/filemanager/upload&user_token=" + tokenAndCookies.get("token") + "&directory=" + directory;
+        String url = domain + "?route=common/filemanager/upload&user_token=" + tokenAndCookies.get("token");
+        String createDirectory = domain + "?route=common/filemanager/folder&user_token=" + tokenAndCookies.get("token") + "&directory=";
+        String cookie = "";
+        if (tokenAndCookies.get("Cookie") instanceof List<?>) {
+            List<?> cookies = (List<?>) tokenAndCookies.get("Cookie");
+            StringBuilder stringBuilder = new StringBuilder();
+            cookies.forEach(o -> stringBuilder.append(o).append("; "));
+            log.info(stringBuilder.toString());
+            cookie = stringBuilder.toString().substring(0, stringBuilder.toString().lastIndexOf("; "));
+            log.info(cookie);
+        }
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.set("Cookie", cookie);
+        httpHeaders.set("content-type", "multipart/form-data; boundary=----WebKitFormBoundaryz3cn3BLSkyswVbLY");
+        httpHeaders.set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36");
+        httpHeaders.set("accept", "application/json, text/javascript, */*; q=0.01");
+
+
+        String image = productStore.getImage();
+        StringBuilder sb = new StringBuilder();
+//        String tempDir = "temp" + System.currentTimeMillis();
+        FileSystemResource fileSystemResource = null;
+        String[] split = image.split(",");
+        Set<String> imgSet = new HashSet<>();
+        for (String s : split) {
+            fileSystemResource = imageUrl2FSR(s);
+            MultiValueMap<String, Object> uploadParam = new LinkedMultiValueMap<>();
+            uploadParam.add("file[]", fileSystemResource);
+            HttpEntity request = new HttpEntity(uploadParam, httpHeaders);
+            uploadAndCreated(url, request, productStore.getProductName());
+//            sb.append("catalog/").append(s).append(",");
+//            imgSet.add("catelog" + s.substring(s.lastIndexOf("/")));
+            imgSet.add("catalog" + fileSystemResource.getPath().substring(fileSystemResource.getPath().lastIndexOf("/")));
+            boolean result = fileSystemResource.getFile().delete();
+            log.info("临时文件删除" + (result ? "成功" : "失败"));
+        }
+//        productStore.setImage(sb.toString().substring(0, sb.toString().lastIndexOf("/")));
+        log.info("opencart图片路径: " + imgSet);
+        productStore.setImage(String.join(",", imgSet));
+        return productStore;
+    }
+
+    public boolean upload2OpenCart(EcommerceProductStore productStore, Integer uid, EcommerceSite site) {
+
+//        EcommerceSite site = siteMapper.selectById(siteId);
+        Set<String> now = loadDataSourceUtil.now();
+        for (String s : now) {
+            if (!s.equals(site.getDbName())) {
+                loadDataSourceUtil.add(site);
+            }
+        }
+        log.info("当前连接的数据源" + loadDataSourceUtil.now().toString());
+        String siteDbName = site.getDbName();
+        // todo
+//        Integer productId = upload2WebProductService.insertProduct(siteDbName);
+        Integer productId = upload2WebProductService.insertProduct(productStore, siteDbName);
+        upload2WebProductService.insertProductDescription(productStore, productId, siteDbName);
+        upload2WebProductService.insertProductImage(productStore, productId, siteDbName);
+        upload2WebProductService.insertCategorie(productStore, productId, siteDbName);
+
+        String options = productStore.getProductOptions();
+        JSONObject jsonObject = new JSONObject(options);
+        Iterator keys = jsonObject.keys();
+        while (keys.hasNext()) {
+            String key = (String) keys.next();
+            System.out.println("key= " + key);
+//            JSONArray optionValueArray = new JSONArray(jsonObject.get(key));
+            JSONArray optionValueArray = jsonObject.getJSONArray(key);
+            upload2WebProductService.insertOptions(productStore, productId, key, optionValueArray, siteDbName);
+        }
+        productStoreMapper.updateByPrimaryKeySelective(EcommerceProductStore.builder()
+                .id(productStore.getId())
+                .uploadOpencartBy(uid)
+                .uploadOpencart(true)
+                .build());
+        log.info("入站成功");
+        return true;
     }
 
 }
