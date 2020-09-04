@@ -11,6 +11,7 @@ import com.xm.commerce.system.model.response.ResponseCode;
 import com.xm.commerce.system.model.response.ResponseData;
 import com.xm.commerce.system.service.ProductStoreService;
 import com.xm.commerce.system.service.Upload2WebProductService;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,7 +33,7 @@ public class Upload2WebProductController {
     ProductStoreService productStoreService;
 
 
-    private EcommerceUser getCurrentUser(){
+    private EcommerceUser getCurrentUser() {
         return currentUserUtils.getCurrentUser();
     }
 
@@ -42,20 +43,20 @@ public class Upload2WebProductController {
     @PostMapping("/toOpenCart")
     public ResponseData upload2OpenCart(@RequestBody UploadRequest uploadRequest) throws Exception {
         EcommerceUser currentUser = getCurrentUser();
-        if (currentUser == null ){
+        if (currentUser == null) {
             throw new ResourceNotFoundException();
         }
         Map<String, Object> tokenAndCookies = upload2WebProductService.login2OpenCart(uploadRequest);
         EcommerceProductStore productStore = upload2WebProductService.uploadPic2OpenCart(uploadRequest, tokenAndCookies);
-        boolean result = upload2WebProductService.upload2OpenCart(productStore, currentUser,uploadRequest.getSiteId());
+        boolean result = upload2WebProductService.upload2OpenCart(productStore, currentUser, uploadRequest.getSiteId());
 
-        return new ResponseData(productStore.getProductName() + "商品入站成功", ResponseCode.SUCCESS );
+        return new ResponseData(productStore.getProductName() + "商品入站成功", ResponseCode.SUCCESS);
     }
 
     @PostMapping("/toOpenCart1")
     public ResponseData BatchUpload2OpenCart(@RequestBody UploadTaskRequest request) throws Exception {
         upload2WebProductService.BatchUpload2OpenCart(request);
-        return new ResponseData("商品入站成功", ResponseCode.SUCCESS );
+        return new ResponseData("商品入站成功", ResponseCode.SUCCESS);
     }
 
 
@@ -70,4 +71,12 @@ public class Upload2WebProductController {
         return new ResponseData(productResponse.getProductName() + "商品入站成功", ResponseCode.SUCCESS);
     }
 
+
+    /**
+     * query uploadTask
+     */
+    @GetMapping("/uploadTasks")
+    public ResponseData getUploadTask() {
+        return new ResponseData("", ResponseCode.SUCCESS, upload2WebProductService.getUploadTask());
+    }
 }

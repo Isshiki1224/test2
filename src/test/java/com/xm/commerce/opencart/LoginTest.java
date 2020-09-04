@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.beanutils.BeanUtils;
 import org.checkerframework.checker.units.qual.A;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -133,14 +134,6 @@ public class LoginTest {
 
     @Test
     public void tessst() throws JsonProcessingException {
-        List<S> ss = new ArrayList<>();
-        ss.add(new S("name1", 1));
-        ss.add(new S("name2", 2));
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        String s = "[{\"name\":\"name1\",\"age\":1},{\"name\":\"name2\",\"age\":2}]";
-//        System.out.println(objectMapper.writeValueAsString(ss));
-        List list = objectMapper.readValue(s, List.class);
-        System.out.println(list);
     }
 }

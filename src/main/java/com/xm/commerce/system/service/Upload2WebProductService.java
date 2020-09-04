@@ -25,6 +25,7 @@ import com.xm.commerce.system.mapper.umino.ProductMapper;
 import com.xm.commerce.system.mapper.umino.ProductOptionMapper;
 import com.xm.commerce.system.mapper.umino.ProductOptionValueMapper;
 import com.xm.commerce.system.mapper.umino.ProductToCategoryMapper;
+import com.xm.commerce.system.model.dto.UploadTaskDto;
 import com.xm.commerce.system.model.entity.ecommerce.EcommerceCategory;
 import com.xm.commerce.system.model.entity.ecommerce.EcommerceProductStore;
 import com.xm.commerce.system.model.entity.ecommerce.EcommerceSite;
@@ -46,8 +47,10 @@ import com.xm.commerce.system.model.request.UploadTaskRequest;
 import com.xm.commerce.system.model.response.UploadTaskResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.time.DateUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -73,6 +76,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -135,31 +139,66 @@ public class Upload2WebProductService {
     private static final String OPEN_CART_REDIRECT = "https://www.asmater.com/admin/index.php?route=common/login";
     private static final String DIRECTORY_NOT_EXIST = "Warning: Directory does not exist!";
 
-
-    public void BatchUpload2OpenCart(UploadTaskRequest request) throws Exception {
-
+    public EcommerceUser getUser(){
         EcommerceUser currentUser = currentUserUtils.getCurrentUser();
         if (null == currentUser) {
             throw new CurrentUserException();
         }
+        return currentUser;
+    }
+
+    public void BatchUpload2OpenCart(UploadTaskRequest request) throws Exception {
+
+        EcommerceUser currentUser = getUser();
         List<EcommerceProductStore> productsList = productStoreMapper.selectByIds(request.getIds());
         EcommerceSite site = siteMapper.selectById(request.getSiteId());
+        String taskId = currentUser.getId() + UUID.randomUUID().toString();
         UploadTaskResponse build = UploadTaskResponse.builder()
-                .site(site)
-                .taskId(currentUser.getId() + UUID.randomUUID().toString())
+                .taskId(taskId)
                 .taskTime(new Date())
                 .uid(currentUser.getId())
                 .taskStatus(0)
                 .username(currentUser.getUsername())
-                .productList(productsList)
+                .siteName(site.getSiteName())
+                .productStores(productsList)
                 .build();
+
+        List<UploadTaskDto> uploadTaskDto = getUploadTaskDto(build, site);
+
 
 //        Map<String, String> taskMap = BeanUtils.describe(build);
 
 //        redisTemplate.opsForHash().putAll(build.getTaskId(), taskMap);
-        redisTemplate.opsForValue().set(RedisConstant.UPLOAD_TASK_PREFIX + build.getTaskId(), build);
-        redisTemplate.opsForList().rightPush(RedisConstant.UPLOAD_TASK_LIST_KEY, build.getTaskId());
+        redisTemplate.opsForSet().add(String.valueOf(currentUser.getId()), RedisConstant.UPLOAD_TASK_PREFIX + taskId);
+        redisTemplate.opsForValue().set(RedisConstant.UPLOAD_TASK_PREFIX + taskId, build);
+
     }
+
+
+    private List<UploadTaskDto> getUploadTaskDto(UploadTaskResponse uploadTaskResponse, EcommerceSite site){
+        List<EcommerceProductStore> productsList = uploadTaskResponse.getProductStores();
+        List<UploadTaskDto> uploadTaskDtoList = new ArrayList<>();
+        for (EcommerceProductStore productStore : productsList) {
+            String id = UUID.randomUUID().toString();
+            UploadTaskDto uploadTaskDto = UploadTaskDto.builder()
+                    .id(id)
+                    .site(site)
+                    .taskId(uploadTaskResponse.getTaskId())
+                    .taskStatus(uploadTaskResponse.getTaskStatus())
+                    .uid(getUser().getId())
+                    .username(currentUserUtils.getCurrentUsername())
+                    .productStore(productStore)
+                    .build();
+            redisTemplate.opsForValue().set(RedisConstant.UPLOAD_TASK_SINGLE_PREFIX + id, uploadTaskDto);
+            redisTemplate.opsForList().rightPush(RedisConstant.UPLOAD_TASK_LIST_KEY, id);
+            uploadTaskDtoList.add(uploadTaskDto);
+
+        }
+        return uploadTaskDtoList;
+    }
+
+
+
 
     @SuppressWarnings(value = {"rawtypes"})
     public boolean upload2OpenCart(EcommerceProductStore productStore, EcommerceUser currentUser, Integer siteId) {
@@ -1012,4 +1051,17 @@ public class Upload2WebProductService {
         return true;
     }
 
+    public List<UploadTaskResponse> getUploadTask() {
+        List<UploadTaskResponse> responses = new ArrayList<>();
+        EcommerceUser user = getUser();
+        Set<Object> members = redisTemplate.opsForSet().members(String.valueOf(user.getId()));
+        if (members == null){
+            return null;
+        }
+        for (Object member : members) {
+            UploadTaskResponse uploadTaskResponse = (UploadTaskResponse)redisTemplate.opsForValue().get(member);
+            responses.add(uploadTaskResponse);
+        }
+        return responses;
+    }
 }

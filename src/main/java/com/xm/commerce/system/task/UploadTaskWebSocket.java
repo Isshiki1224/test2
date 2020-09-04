@@ -63,6 +63,7 @@ public class UploadTaskWebSocket {
      */
     @OnOpen
     public void onOpen(@PathParam("token") String token, Session session) {
+        session.setMaxIdleTimeout(3600000);
         if (StringUtils.isBlank(token) || !token.startsWith(SecurityConstant.TOKEN_PREFIX)){
             throw new RuntimeException();
         }
