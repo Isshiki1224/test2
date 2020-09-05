@@ -53,7 +53,7 @@ public class Upload2WebProductController {
         return new ResponseData(productStore.getProductName() + "商品入站成功", ResponseCode.SUCCESS);
     }
 
-    @PostMapping("/toOpenCart1")
+    @PostMapping("/batchUpload")
     public ResponseData BatchUpload2OpenCart(@RequestBody UploadTaskRequest request) throws Exception {
         upload2WebProductService.BatchUpload2OpenCart(request);
         return new ResponseData("商品入站成功", ResponseCode.SUCCESS);

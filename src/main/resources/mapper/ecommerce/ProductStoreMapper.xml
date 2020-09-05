@@ -49,7 +49,7 @@
             <if test="maxPrice != null and minPrice != null">
                 and price between #{minPrice} and #{maxPrice}
             </if>
-            and upload_shopify != 1 or upload_opencart != 1
+            and (upload_shopify != 1 or upload_opencart != 1)
         </where>
         <if test="byAddTime != 0 or byPrice != 0">
             <trim suffixOverrides=",">
@@ -63,10 +63,10 @@
                     </when>
                 </choose>
                 <choose>
-                    <when test="byAddTime == 1">
+                    <when test="byAddTime == 2">
                         data_added ,
                     </when>
-                    <when test="byAddTime == 2">
+                    <when test="byAddTime == 1">
                         data_added desc,
                     </when>
                 </choose>
@@ -85,10 +85,10 @@
 
 
 
-    <select id="selectByName" resultMap="BaseResultMap">
+    <select id="selectByNameAndUid" resultMap="BaseResultMap">
         select <include refid="Base_Column_List"/>
         from ecommerce_product_store
-        where product_name = #{productName}
+        where product_name = #{productName} and uid = #{uid}
     </select>
 
 
@@ -175,6 +175,10 @@
         <!--@mbg.generated-->
         insert into ecommerce_product_store
         <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="uid != null">
+                uid,
+            </if>
+
             <if test="productName != null">
                 product_name,
             </if>
@@ -234,6 +238,9 @@
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="uid != null">
+                #{uid,jdbcType=INTEGER},
+            </if>
             <if test="productName != null">
                 #{productName,jdbcType=VARCHAR},
             </if>

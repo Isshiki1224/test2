@@ -121,8 +121,10 @@ public class UploadTaskWebSocket {
         for (String key : keys) {
             if (key.startsWith(username)) {
                 UploadTaskWebSocket uploadTaskWebSocket = map.get(key);
-                String s = objectMapper.writeValueAsString(message);
-                uploadTaskWebSocket.session.getBasicRemote().sendText(s);
+                if (uploadTaskWebSocket.session.isOpen()){
+                    String s = objectMapper.writeValueAsString(message);
+                    uploadTaskWebSocket.session.getBasicRemote().sendText(s);
+                }
             }
         }
 //        log.info("发送给客户端的message: " + message.toString());

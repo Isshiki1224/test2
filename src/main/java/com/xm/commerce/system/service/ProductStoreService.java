@@ -62,7 +62,7 @@ public class ProductStoreService {
 
     public int insertSelective(EcommerceProductStore record) throws Exception {
 
-        List<EcommerceProductStore> ecommerceProductStores = productStoreMapper.selectByName(record.getProductName());
+        List<EcommerceProductStore> ecommerceProductStores = productStoreMapper.selectByNameAndUid(record.getProductName(), getUser().getId());
         if (null != ecommerceProductStores && !ecommerceProductStores.isEmpty()) {
             throw new ProductAlreadyExistException(ImmutableMap.of("商品已经存在", record.getProductName()));
         }

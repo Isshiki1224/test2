@@ -21,5 +21,10 @@ public class UploadTaskDto {
     private EcommerceSite site;
     private Integer uid;
     private String username;
+    private String errorMessage;
     private EcommerceProductStore productStore;
+
+
+
+
 }

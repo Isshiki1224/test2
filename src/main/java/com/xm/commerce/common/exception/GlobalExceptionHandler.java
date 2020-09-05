@@ -1,6 +1,10 @@
 package com.xm.commerce.common.exception;
 
+import com.google.common.collect.ImmutableMap;
+import com.xm.commerce.system.model.dto.UploadTaskDto;
+import com.xm.commerce.system.task.UploadTaskWebSocket;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -12,6 +16,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import sun.misc.Request;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
@@ -21,6 +26,11 @@ import java.util.Map;
 @ControllerAdvice
 @ResponseBody
 public class GlobalExceptionHandler {
+
+    @Resource
+    RedisTemplate<String, Object> redisTemplate;
+    @Resource
+    UploadTaskWebSocket uploadTaskWebSocket;
     
     /**
      * BaseException异常处理
@@ -29,7 +39,8 @@ public class GlobalExceptionHandler {
      * @return
      */
     @ExceptionHandler(value = com.xm.commerce.common.exception.BaseException.class)
-    public ResponseEntity<ErrorResponse> ResourceNotFoundExceptionHandler(HttpServletRequest req, BaseException e){
+    public ResponseEntity<ErrorResponse> baseExceptionHandler(HttpServletRequest req, BaseException e) throws Exception {
+
         ErrorResponse errorResponse = new ErrorResponse(e, req.getRequestURI());
         log.error("occur BaseException:" + errorResponse.toString());
         return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(errorResponse);

@@ -16,7 +16,7 @@ public interface ProductStoreMapper extends BaseMapper<EcommerceProductStore> {
     int deleteByBatch(@Param("ids") List<Integer> ids);
 
 
-    List<EcommerceProductStore> selectByName(String productName);
+    List<EcommerceProductStore> selectByNameAndUid(@Param("productName") String productName, @Param("uid") Integer uid);
 
 
     int updateByPrimaryKeySelective(EcommerceProductStore record);
