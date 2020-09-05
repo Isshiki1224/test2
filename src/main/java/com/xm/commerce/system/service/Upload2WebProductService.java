@@ -46,13 +46,10 @@ import com.xm.commerce.system.model.request.UploadRequest;
 import com.xm.commerce.system.model.request.UploadTaskRequest;
 import com.xm.commerce.system.model.response.UploadTaskResponse;
 import com.xm.commerce.system.task.UploadTaskWebSocket;
-import com.xm.commerce.system.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.time.DateUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -79,11 +76,9 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -178,7 +173,7 @@ public class Upload2WebProductService {
 //        Map<String, String> taskMap = BeanUtils.describe(build);
 
 //        redisTemplate.opsForHash().putAll(build.getTaskId(), taskMap);
-        redisTemplate.opsForSet().add(String.valueOf(currentUser.getId()), RedisConstant.UPLOAD_TASK_PREFIX + taskId);
+        redisTemplate.opsForSet().add(RedisConstant.UPLOAD_TASK_BY_USER + currentUser.getId(), RedisConstant.UPLOAD_TASK_PREFIX + taskId);
         redisTemplate.opsForValue().set(RedisConstant.UPLOAD_TASK_PREFIX + taskId, build);
 
     }
@@ -700,6 +695,7 @@ public class Upload2WebProductService {
             uploadTaskWebSocket.sendMessage(uploadTaskDto, uploadTaskDto.getUsername());
             throw new SiteNotFoundException(ImmutableMap.of("站点信息错误", ""));
         }
+        log.info("body::::" + body);
         if (body != null) {
             log.info(body);
             try {
@@ -1000,6 +996,9 @@ public class Upload2WebProductService {
         FileSystemResource fileSystemResource;
         String[] split = image.split(",");
         Set<String> imgSet = new HashSet<>();
+        log.info("阿股份拉升的肌肤拉德斯基了附近的双料冠军");
+        log.info("split:split:" + split.length);
+        int a = 0;
         for (String s : split) {
             fileSystemResource = imageUrl2FSR(s);
             MultiValueMap<String, Object> uploadParam = new LinkedMultiValueMap<>();
@@ -1010,6 +1009,7 @@ public class Upload2WebProductService {
             boolean result = fileSystemResource.getFile().delete();
             log.info("临时文件删除" + (result ? "成功" : "失败"));
         }
+        log.info("咖啡色到了放假啊谁来打卡");
         productStore.setImage(String.join(",", imgSet));
         return productStore;
     }
@@ -1053,7 +1053,7 @@ public class Upload2WebProductService {
     public List<UploadTaskResponse> getUploadTask() {
         List<UploadTaskResponse> responses = new ArrayList<>();
         EcommerceUser user = getUser();
-        Set<Object> members = redisTemplate.opsForSet().members(String.valueOf(user.getId()));
+        Set<Object> members = redisTemplate.opsForSet().members(RedisConstant.UPLOAD_TASK_BY_USER + user.getId());
         if (members == null) {
             return null;
         }

@@ -40,12 +40,17 @@ public class UploadTask {
         uploadTaskWebSocket.sendMessage(uploadTaskDto, uploadTaskDto.getUsername());
         // task execute
         EcommerceSite site = uploadTaskDto.getSite();
+        log.info("site info: {}", site);
         EcommerceProductStore productStore = uploadTaskDto.getProductStore();
+        log.info("product info: {}", productStore);
         Integer uid = uploadTaskDto.getUid();
         if (site.getSiteCategory()) {
             Map<String, Object> tokenAndCookie = upload2WebProductService.login2OpenCart2(site, singleKey);
+            log.info("sdjkdljfkldsjfdsj1");
             productStore = upload2WebProductService.uploadPic2OpenCart2(productStore, site, tokenAndCookie, singleKey);
+            log.info("sdjkdljfkldsjfdsj2");
             boolean result = upload2WebProductService.upload2OpenCart2(productStore, uid, site);
+            log.info("sdjkdljfkldsjfdsj3");
             if (result) {
                 productStore.setUploadOpencart(true);
                 updateSingleTaskStatusAndMessaging(uploadTaskDto, singleKey, productStore);

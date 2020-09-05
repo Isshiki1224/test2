@@ -16,32 +16,29 @@ import java.util.concurrent.TimeUnit;
 @EnableScheduling
 public class UploadTaskConsumer {
 
-    @Resource
-    private RedisTemplate<String, Object> redisTemplate;
+	@Resource
+	private RedisTemplate<String, Object> redisTemplate;
 
-    @Resource
-    private UploadTask uploadTask;
+	@Resource
+	private UploadTask uploadTask;
 
-    @Resource(name = "taskExecutor")
-    private ThreadPoolTaskExecutor executor;
+	@Resource(name = "taskExecutor")
+	private ThreadPoolTaskExecutor executor;
 
-    @Scheduled(fixedRate = 8000)
-    public void run() throws Exception {
-        Object task;
-        log.info("active pool count " + executor.getActiveCount());
-        log.info("core pool size " + executor.getThreadPoolExecutor().getQueue().remainingCapacity());
-        try {
-            task = redisTemplate.opsForList().leftPop(RedisConstant.UPLOAD_TASK_LIST_KEY, 5, TimeUnit.SECONDS);
-            if (task == null) {
-                return;
-            }
-        } catch (Exception e) {
-            return;
-        }
+	@Scheduled(fixedRate = 2000)
+	public void run() throws Exception {
+		Object task;
+		log.info("active pool count " + executor.getActiveCount());
+		log.info("core pool size " + executor.getThreadPoolExecutor().getQueue().remainingCapacity());
+		task = redisTemplate.opsForList().leftPop(RedisConstant.UPLOAD_TASK_LIST_KEY);
+		if (task == null) {
+			return;
+		}
+		log.info("task: {}", task);
         log.info("get from redis: " + task);
         if (executor.getThreadPoolExecutor().getQueue().remainingCapacity() > 0) {
             uploadTask.taskExecute(task);
         }
-    }
+	}
 
 }
