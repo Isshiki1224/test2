@@ -45,6 +45,7 @@ public class UploadTask {
         log.info("product info: {}", productStore);
         Integer uid = uploadTaskDto.getUid();
         if (site.getSiteCategory()) {
+
             OpenCartAuthDto openCartAuthDto = (OpenCartAuthDto) redisTemplate.opsForValue().get(RedisConstant.OPENCART_TOKEN + site.getId());
             if (openCartAuthDto == null) {
                 openCartAuthDto = upload2WebProductService.login2OpenCart2(site, singleKey);
@@ -87,6 +88,7 @@ public class UploadTask {
         uploadTaskWebSocket.sendMessage(uploadTaskDto, uploadTaskDto.getUsername());
         log.info("发送给前端的数据：" + uploadTaskDto);
     }
+
 
     private boolean isTokenExpire(EcommerceSite site, OpenCartAuthDto openCartAuthDto) {
         return false;
