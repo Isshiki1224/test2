@@ -3,7 +3,6 @@ package com.xm.commerce.system.mapper.ecommerce;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.xm.commerce.system.model.entity.ecommerce.EcommerceProductStore;
 import com.xm.commerce.system.model.request.CategoryRequest;
-import org.apache.catalina.User;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

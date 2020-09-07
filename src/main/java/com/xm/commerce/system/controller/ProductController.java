@@ -76,6 +76,4 @@ public class ProductController {
         FileUploadDto fileUploadDto = fileUtil.fileUpload(file, currentEcommerceUser.getUsername() + "/");
         return new ResponseData("上传成功", ResponseCode.SUCCESS, fileUploadDto);
     }
-
-
 }

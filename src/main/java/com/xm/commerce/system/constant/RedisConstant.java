@@ -11,4 +11,6 @@ public interface RedisConstant {
     String UPLOAD_TASK_SINGLE_PREFIX = "ecommerce:upload:single:task:";
 
     String UPLOAD_TASK_BY_USER = "ecommerce:upload:user:";
+
+    String OPENCART_TOKEN = "ecommerce:opencart:token:";
 }

@@ -1,16 +1,29 @@
 package com.xm.commerce.system.task;
 
+import com.google.common.collect.ImmutableMap;
+import com.xm.commerce.common.exception.ResourceNotFoundException;
+import com.xm.commerce.common.exception.SiteNotFoundException;
 import com.xm.commerce.system.constant.RedisConstant;
+import com.xm.commerce.system.model.dto.OpenCartAuthDto;
 import com.xm.commerce.system.model.dto.UploadTaskDto;
 import com.xm.commerce.system.model.entity.ecommerce.EcommerceProductStore;
 import com.xm.commerce.system.model.entity.ecommerce.EcommerceSite;
 import com.xm.commerce.system.service.Upload2WebProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -22,6 +35,8 @@ public class UploadTask {
     Upload2WebProductService upload2WebProductService;
     @Resource
     UploadTaskWebSocket uploadTaskWebSocket;
+    @Resource
+    RestTemplate restTemplate;
 
     /**
      * execute single task
@@ -45,12 +60,12 @@ public class UploadTask {
         log.info("product info: {}", productStore);
         Integer uid = uploadTaskDto.getUid();
         if (site.getSiteCategory()) {
-            Map<String, Object> tokenAndCookie = upload2WebProductService.login2OpenCart2(site, singleKey);
-            log.info("sdjkdljfkldsjfdsj1");
-            productStore = upload2WebProductService.uploadPic2OpenCart2(productStore, site, tokenAndCookie, singleKey);
-            log.info("sdjkdljfkldsjfdsj2");
+            OpenCartAuthDto openCartAuthDto = (OpenCartAuthDto) redisTemplate.opsForValue().get(RedisConstant.OPENCART_TOKEN + site.getId());
+            if (openCartAuthDto == null) {
+                openCartAuthDto = upload2WebProductService.login2OpenCart2(site, singleKey);
+            }
+            productStore = upload2WebProductService.uploadPic2OpenCart2(productStore, site, openCartAuthDto, singleKey);
             boolean result = upload2WebProductService.upload2OpenCart2(productStore, uid, site);
-            log.info("sdjkdljfkldsjfdsj3");
             if (result) {
                 productStore.setUploadOpencart(true);
                 updateSingleTaskStatusAndMessaging(uploadTaskDto, singleKey, productStore);
@@ -73,4 +88,10 @@ public class UploadTask {
         uploadTaskWebSocket.sendMessage(uploadTaskDto, uploadTaskDto.getUsername());
         log.info("发送给前端的数据：" + uploadTaskDto);
     }
+
+    private boolean isTokenExpire(EcommerceSite site, OpenCartAuthDto openCartAuthDto) {
+        return false;
+    }
+
+
 }

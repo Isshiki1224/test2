@@ -25,6 +25,7 @@ import com.xm.commerce.system.mapper.umino.ProductMapper;
 import com.xm.commerce.system.mapper.umino.ProductOptionMapper;
 import com.xm.commerce.system.mapper.umino.ProductOptionValueMapper;
 import com.xm.commerce.system.mapper.umino.ProductToCategoryMapper;
+import com.xm.commerce.system.model.dto.OpenCartAuthDto;
 import com.xm.commerce.system.model.dto.UploadTaskDto;
 import com.xm.commerce.system.model.entity.ecommerce.EcommerceCategory;
 import com.xm.commerce.system.model.entity.ecommerce.EcommerceProductStore;
@@ -48,6 +49,7 @@ import com.xm.commerce.system.model.response.UploadTaskResponse;
 import com.xm.commerce.system.task.UploadTaskWebSocket;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -150,7 +152,7 @@ public class Upload2WebProductService {
 
     public void BatchUpload2OpenCart(UploadTaskRequest request) throws Exception {
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String format = sdf.format(new Date());
 
         EcommerceUser currentUser = getUser();
@@ -684,8 +686,8 @@ public class Upload2WebProductService {
         try {
             body = restTemplate.postForEntity(url, request, String.class).getBody();
         } catch (Exception e) {
-            UploadTaskDto uploadTaskDto = (UploadTaskDto)redisTemplate.opsForValue().get(singleKey);
-            if(uploadTaskDto == null){
+            UploadTaskDto uploadTaskDto = (UploadTaskDto) redisTemplate.opsForValue().get(singleKey);
+            if (uploadTaskDto == null) {
                 log.info("uploadTaskDto not exist");
                 throw new ResourceNotFoundException();
             }
@@ -749,22 +751,11 @@ public class Upload2WebProductService {
         log.info("临时目录{" + file.getPath() + "}删除" + (delete ? "成功" : "失败"));
     }
 
-    public static FileSystemResource imageUrl2FSR(String path) throws IOException {
-        HttpURLConnection httpUrl = (HttpURLConnection) new URL(path).openConnection();
-        httpUrl.connect();
-        File file = File.createTempFile(path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf(".")), path.substring(path.lastIndexOf(".")));
-        try (InputStream ins = httpUrl.getInputStream()) {
-            log.info("临时文件{" + file.getPath() + "}创建成功");
-            try (OutputStream os = new FileOutputStream(file)) {
-                int bytesRead;
-                int len = ins.available();
-                byte[] buffer = new byte[len];
-                while ((bytesRead = ins.read(buffer, 0, len)) != -1) {
-                    os.write(buffer, 0, bytesRead);
-                }
-            }
-            return new FileSystemResource(file);
-        }
+    public static FileSystemResource imageUrl2FSR(String url) throws IOException {
+        URL imageUrl = new URL(url);
+        File file = File.createTempFile(url.substring(url.lastIndexOf("/") + 1, url.lastIndexOf(".")), url.substring(url.lastIndexOf(".")));
+        FileUtils.copyURLToFile(imageUrl, file);
+        return new FileSystemResource(file);
     }
 
     public Map<String, Object> login2OpenCart(UploadRequest uploadRequest) {
@@ -810,52 +801,57 @@ public class Upload2WebProductService {
     }
 
 
-    public Map<String, Object> login2OpenCart2(EcommerceSite site, String singleKey) throws Exception {
-        String domain = site.getDomain();
-        String url = domain + "?route=common/login";
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.set("content-type", "multipart/form-data; boundary=----WebKitFormBoundaryz3cn3BLSkyswVbLY");
-        httpHeaders.set("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
-        httpHeaders.set("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36");
-
-        MultiValueMap<String, String> loginParam = new LinkedMultiValueMap<>();
-        loginParam.add("username", site.getAccount());
-        loginParam.add("password", site.getPassword());
-        loginParam.add("redirect", OPEN_CART_REDIRECT);
-
-        HttpEntity request = new HttpEntity(loginParam, httpHeaders);
-        ResponseEntity<String> response = null;
+    public OpenCartAuthDto login2OpenCart2(EcommerceSite site, String singleKey) {
         try {
+            String domain = site.getDomain();
+            String url = domain + "?route=common/login";
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.set("content-type", "multipart/form-data; boundary=----WebKitFormBoundaryz3cn3BLSkyswVbLY");
+            httpHeaders.set("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
+            httpHeaders.set("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36");
+
+            MultiValueMap<String, String> loginParam = new LinkedMultiValueMap<>();
+            loginParam.add("username", site.getAccount());
+            loginParam.add("password", site.getPassword());
+            loginParam.add("redirect", url);
+
+            HttpEntity request = new HttpEntity(loginParam, httpHeaders);
+            ResponseEntity<String> response = null;
             response = restTemplate.postForEntity(url, request, String.class);
+            URI location = response.getHeaders().getLocation();
+            List<String> cookie = response.getHeaders().get("Set-Cookie");
+            String token;
+            HashMap<String, Object> result = new HashMap<>();
+            if (location != null && cookie != null) {
+                log.info("登陆成功");
+                String path = location.toString();
+                token = path.substring(path.lastIndexOf("user_token=") + "user_token=".length());
+                log.info(token);
+                log.info(cookie.toString());
+                result.put("token", token);
+                result.put("Cookie", cookie);
+            } else {
+                throw new SiteNotFoundException();
+            }
+            return new OpenCartAuthDto(token, cookie);
         } catch (Exception e) {
             log.info(e.getMessage());
-            UploadTaskDto uploadTaskDto = (UploadTaskDto)redisTemplate.opsForValue().get(singleKey);
-            if(uploadTaskDto == null){
+            UploadTaskDto uploadTaskDto = (UploadTaskDto) redisTemplate.opsForValue().get(singleKey);
+            if (uploadTaskDto == null) {
                 log.info("uploadTaskDto not exist");
                 throw new ResourceNotFoundException();
             }
-            uploadTaskDto.setErrorMessage("站点出错");
+            uploadTaskDto.setErrorMessage(e.getMessage());
             uploadTaskDto.setTaskStatus(3);
             redisTemplate.opsForValue().set(singleKey, uploadTaskDto);
-            uploadTaskWebSocket.sendMessage(uploadTaskDto, uploadTaskDto.getUsername());
-            throw new SiteNotFoundException(ImmutableMap.of("站点错误", site));
+            try {
+                uploadTaskWebSocket.sendMessage(uploadTaskDto, uploadTaskDto.getUsername());
+            } catch (Exception exception) {
+                log.info("websocket异常，{}", exception.getMessage());
+                exception.printStackTrace();
+            }
+            throw new RuntimeException();
         }
-        URI location = response.getHeaders().getLocation();
-        List<String> cookie = response.getHeaders().get("Set-Cookie");
-        String token;
-        HashMap<String, Object> result = new HashMap<>();
-        if (location != null && cookie != null) {
-            log.info("登陆成功");
-            String path = location.toString();
-            token = path.substring(path.lastIndexOf("user_token=") + "user_token=".length());
-            log.info(token);
-            log.info(cookie.toString());
-            result.put("token", token);
-            result.put("Cookie", cookie);
-        } else {
-            throw new SiteNotFoundException();
-        }
-        return result;
     }
 
     public boolean upload2Shopify2(EcommerceProductStore productStore, EcommerceSite site, Integer uid, String singleKey) throws Exception {
@@ -876,7 +872,7 @@ public class Upload2WebProductService {
         if (productOptions.equals("{}")) {
             variants = null;
             options = null;
-        }else{
+        } else {
             JSONObject jsonObject = new JSONObject(productOptions);
             Iterator<String> keys = jsonObject.keys();
             while (keys.hasNext()) {
@@ -946,8 +942,8 @@ public class Upload2WebProductService {
             resp = restTemplate.postForEntity(site.getApi(), request, String.class);
         } catch (Exception e) {
             log.info("resttemplate异常===" + e.getMessage());
-            UploadTaskDto uploadTaskDto = (UploadTaskDto)redisTemplate.opsForValue().get(singleKey);
-            if(uploadTaskDto == null){
+            UploadTaskDto uploadTaskDto = (UploadTaskDto) redisTemplate.opsForValue().get(singleKey);
+            if (uploadTaskDto == null) {
                 log.info("uploadTaskDto not exist");
                 throw new ResourceNotFoundException();
             }
@@ -970,15 +966,15 @@ public class Upload2WebProductService {
         return true;
     }
 
-    public EcommerceProductStore uploadPic2OpenCart2(EcommerceProductStore productStore, EcommerceSite site, Map<String, Object> tokenAndCookies, String singleKey) throws Exception {
+    public EcommerceProductStore uploadPic2OpenCart2(EcommerceProductStore productStore, EcommerceSite site, OpenCartAuthDto openCartAuthDto, String singleKey) throws Exception {
         String domain = site.getDomain();
         String directory = site.getSiteName();
-//        String url = domain + "?route=common/filemanager/upload&user_token=" + tokenAndCookies.get("token") + "&directory=" + directory;
-        String url = domain + "?route=common/filemanager/upload&user_token=" + tokenAndCookies.get("token");
-        String createDirectory = domain + "?route=common/filemanager/folder&user_token=" + tokenAndCookies.get("token") + "&directory=";
+//        String url = domain + "?route=common/filemanager/upload&user_token=" + openCartAuthDto.get("token") + "&directory=" + directory;
+        String url = domain + "?route=common/filemanager/upload&user_token=" + openCartAuthDto.getToken();
+        String createDirectory = domain + "?route=common/filemanager/folder&user_token=" + openCartAuthDto.getToken() + "&directory=";
         String cookie = "";
-        if (tokenAndCookies.get("Cookie") instanceof List<?>) {
-            List<?> cookies = (List<?>) tokenAndCookies.get("Cookie");
+        if (openCartAuthDto.getCookie() != null) {
+            List<String> cookies = openCartAuthDto.getCookie();
             StringBuilder stringBuilder = new StringBuilder();
             cookies.forEach(o -> stringBuilder.append(o).append("; "));
             log.info(stringBuilder.toString());
@@ -996,9 +992,6 @@ public class Upload2WebProductService {
         FileSystemResource fileSystemResource;
         String[] split = image.split(",");
         Set<String> imgSet = new HashSet<>();
-        log.info("阿股份拉升的肌肤拉德斯基了附近的双料冠军");
-        log.info("split:split:" + split.length);
-        int a = 0;
         for (String s : split) {
             fileSystemResource = imageUrl2FSR(s);
             MultiValueMap<String, Object> uploadParam = new LinkedMultiValueMap<>();
@@ -1007,14 +1000,13 @@ public class Upload2WebProductService {
             uploadAndCreated(url, request, singleKey);
             imgSet.add("catalog" + fileSystemResource.getPath().substring(fileSystemResource.getPath().lastIndexOf("/")));
             boolean result = fileSystemResource.getFile().delete();
-            log.info("临时文件删除" + (result ? "成功" : "失败"));
         }
-        log.info("咖啡色到了放假啊谁来打卡");
         productStore.setImage(String.join(",", imgSet));
         return productStore;
     }
 
     public boolean upload2OpenCart2(EcommerceProductStore productStore, Integer uid, EcommerceSite site) {
+//        log.warn("===================================" + productStore);
 
         Set<String> now = loadDataSourceUtil.now();
         for (String s : now) {

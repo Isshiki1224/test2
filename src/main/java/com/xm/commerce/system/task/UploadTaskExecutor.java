@@ -14,7 +14,7 @@ public class UploadTaskExecutor {
     @Bean("taskExecutor")
     public Executor taskExecutor(){
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
-        taskExecutor.setCorePoolSize(10);
+        taskExecutor.setCorePoolSize(16);
         taskExecutor.setMaxPoolSize(50);
         taskExecutor.setQueueCapacity(200);
         taskExecutor.setKeepAliveSeconds(60);

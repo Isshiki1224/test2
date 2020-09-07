@@ -18,8 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.io.IOException;
-import java.nio.channels.Channel;
 import java.util.Map;
 
 @RestController
@@ -48,8 +46,7 @@ public class Upload2WebProductController {
         }
         Map<String, Object> tokenAndCookies = upload2WebProductService.login2OpenCart(uploadRequest);
         EcommerceProductStore productStore = upload2WebProductService.uploadPic2OpenCart(uploadRequest, tokenAndCookies);
-        boolean result = upload2WebProductService.upload2OpenCart(productStore, currentUser, uploadRequest.getSiteId());
-
+        upload2WebProductService.upload2OpenCart(productStore, currentUser, uploadRequest.getSiteId());
         return new ResponseData(productStore.getProductName() + "商品入站成功", ResponseCode.SUCCESS);
     }
 
@@ -67,10 +64,9 @@ public class Upload2WebProductController {
     public ResponseData upload2Shopify(@RequestBody UploadRequest uploadRequest) throws Exception {
         EcommerceUser currentUser = getCurrentUser();
         ProductResponse productResponse = productStoreService.selectRespByPrimaryKey(uploadRequest.getProductId());
-        boolean result = upload2WebProductService.upload2Shopify(uploadRequest, currentUser);
+        upload2WebProductService.upload2Shopify(uploadRequest, currentUser);
         return new ResponseData(productResponse.getProductName() + "商品入站成功", ResponseCode.SUCCESS);
     }
-
 
     /**
      * query uploadTask
