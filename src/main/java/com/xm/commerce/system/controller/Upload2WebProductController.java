@@ -38,17 +38,17 @@ public class Upload2WebProductController {
     /**
      * upload 2 opencart
      */
-    @PostMapping("/toOpenCart")
-    public ResponseData upload2OpenCart(@RequestBody UploadRequest uploadRequest) throws Exception {
-        EcommerceUser currentUser = getCurrentUser();
-        if (currentUser == null) {
-            throw new ResourceNotFoundException();
-        }
-        Map<String, Object> tokenAndCookies = upload2WebProductService.login2OpenCart(uploadRequest);
-        EcommerceProductStore productStore = upload2WebProductService.uploadPic2OpenCart(uploadRequest, tokenAndCookies);
-        upload2WebProductService.upload2OpenCart(productStore, currentUser, uploadRequest.getSiteId());
-        return new ResponseData(productStore.getProductName() + "商品入站成功", ResponseCode.SUCCESS);
-    }
+//    @PostMapping("/toOpenCart")
+//    public ResponseData upload2OpenCart(@RequestBody UploadRequest uploadRequest) throws Exception {
+//        EcommerceUser currentUser = getCurrentUser();
+//        if (currentUser == null) {
+//            throw new ResourceNotFoundException();
+//        }
+//        Map<String, Object> tokenAndCookies = upload2WebProductService.login2OpenCart(uploadRequest);
+//        EcommerceProductStore productStore = upload2WebProductService.uploadPic2OpenCart(uploadRequest, tokenAndCookies);
+//        upload2WebProductService.upload2OpenCart(productStore, currentUser, uploadRequest.getSiteId());
+//        return new ResponseData(productStore.getProductName() + "商品入站成功", ResponseCode.SUCCESS);
+//    }
 
     @PostMapping("/batchUpload")
     public ResponseData BatchUpload2OpenCart(@RequestBody UploadTaskRequest request) throws Exception {
