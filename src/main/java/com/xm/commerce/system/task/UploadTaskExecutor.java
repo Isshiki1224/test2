@@ -19,7 +19,7 @@ public class UploadTaskExecutor {
         taskExecutor.setQueueCapacity(200);
         taskExecutor.setKeepAliveSeconds(60);
         taskExecutor.setThreadNamePrefix("taskExecutor--");
-        taskExecutor.setWaitForTasksToCompleteOnShutdown(true);
+        taskExecutor.setWaitForTasksToCompleteOnShutdown(false);
         taskExecutor.setAwaitTerminationSeconds(60);
         return taskExecutor;
     }

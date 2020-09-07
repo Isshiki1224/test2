@@ -746,6 +746,7 @@ public class Upload2WebProductService {
         return true;
     }
 
+
     private boolean isSKUExist(ResponseEntity<String> queryResponse, String uploadSku){
         JSONObject productList = new JSONObject(queryResponse.getBody());
         JSONArray productArray = productList.getJSONArray("products");
