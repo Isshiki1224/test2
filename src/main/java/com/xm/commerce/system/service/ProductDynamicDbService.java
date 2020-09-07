@@ -1,6 +1,9 @@
 package com.xm.commerce.system.service;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.xm.commerce.system.mapper.umino.CategoryDescriptionMapper;
 import com.xm.commerce.system.mapper.umino.CategoryMapper;
 import com.xm.commerce.system.mapper.umino.OptionDescriptionMapper;
@@ -251,5 +254,13 @@ public class ProductDynamicDbService {
 				.build();
 		optionValueMapper.insert(optionValue);
 		return optionValue;
+	}
+
+	@DS("#siteDbName")
+	public boolean isSkuNotExist(String sku, String siteDbName) {
+		LambdaQueryWrapper<OcProduct> wrapper = Wrappers.lambdaQuery();
+		wrapper.eq(OcProduct::getSku, sku);
+		List<OcProduct> ocProducts = productMapper.selectList(wrapper);
+		return ocProducts.isEmpty();
 	}
 }

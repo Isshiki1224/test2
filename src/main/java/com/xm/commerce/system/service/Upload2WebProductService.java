@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import com.xm.commerce.common.datasource.util.LoadDataSourceUtil;
 import com.xm.commerce.common.exception.CurrentUserException;
 import com.xm.commerce.common.exception.FileUploadException;
+import com.xm.commerce.common.exception.ProductSkuAlreadyExistException;
 import com.xm.commerce.common.exception.ResourceNotFoundException;
 import com.xm.commerce.common.exception.SiteMessageException;
 import com.xm.commerce.common.exception.SiteNotFoundException;
@@ -772,7 +773,10 @@ public class Upload2WebProductService {
 		String siteDbName = site.getDbName();
 
 		// look up there is same sku
-
+		boolean skuNotExist = productDynamicDbService.isSkuNotExist(productStore.getSku(), siteDbName);
+		if (!skuNotExist) {
+			throw new ProductSkuAlreadyExistException(ImmutableMap.of("sku", productStore.getSku()));
+		}
 
 		Integer productId = productDynamicDbService.insertProduct(productStore, siteDbName);
 		productDynamicDbService.insertProductDescription(productStore, productId, siteDbName);
