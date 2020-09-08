@@ -59,6 +59,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -893,6 +894,24 @@ public class Upload2WebProductService {
                 productStores.set(i, uploadTaskDto);
             }
             uploadTaskResponse.setProductStores(productStores);
+            uploadTaskResponse.setAll(productStores.size());
+            Map<Integer, Long> collect = productStores.stream().map(UploadTaskDto::getTaskStatus)
+                    .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+            // calculate task status from multi tasks
+            // status 0: waiting 1: executing 2: finished 3: error
+            if (collect.get(1) > 0) {
+                uploadTaskResponse.setStatus(1);
+            } else {
+                if (collect.get(2) > 0) {
+                    uploadTaskResponse.setStatus(2);
+                }
+                if (collect.get(0) > 0) {
+                    uploadTaskResponse.setStatus(0);
+                }
+                if (collect.get(3) > 0) {
+                    uploadTaskResponse.setStatus(3);
+                }
+            }
             redisTemplate.opsForValue().set(String.valueOf(member), uploadTaskResponse);
             responses.add(uploadTaskResponse);
         }
