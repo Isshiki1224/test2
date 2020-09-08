@@ -1,7 +1,6 @@
 package com.xm.commerce.system.service;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.xm.commerce.system.mapper.umino.CategoryDescriptionMapper;
