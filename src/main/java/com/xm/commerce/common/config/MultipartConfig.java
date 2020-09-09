@@ -16,7 +16,7 @@ public class MultipartConfig {
     @Bean
     public MultipartConfigElement multipartConfigElement() {
         MultipartConfigFactory factory = new MultipartConfigFactory();
-        //设置单个附件大小上限值（默认为1M）
+        //设置单个附件大小上限值
         factory.setMaxFileSize(DataSize.ofBytes(10 * 1024 * 1024));
         //设置所有附件的总大小上限值
         factory.setMaxRequestSize(DataSize.ofBytes(10 * 10 * 1024 * 1024));

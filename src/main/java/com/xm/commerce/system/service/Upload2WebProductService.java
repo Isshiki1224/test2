@@ -628,7 +628,6 @@ public class Upload2WebProductService {
         String token = "Basic " + base64Token;
         log.info("authorization= " + token);
 
-
         HttpHeaders queryHeaders = new HttpHeaders();
         queryHeaders.set("Authorization", token);
         HttpEntity<String> queryEntity = new HttpEntity<>(queryHeaders);
@@ -897,21 +896,28 @@ public class Upload2WebProductService {
             uploadTaskResponse.setAll(productStores.size());
             Map<Integer, Long> collect = productStores.stream().map(UploadTaskDto::getTaskStatus)
                     .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+            log.info("{}, {}", uploadTaskResponse.getTaskTime(), collect.toString());
             // calculate task status from multi tasks
             // status 0: waiting 1: executing 2: finished 3: error
-            if (collect.get(1) > 0) {
+            int already = 0;
+            if (collect.get(1) != null) {
                 uploadTaskResponse.setStatus(1);
+                if (collect.get(2) != null) {
+                    already = collect.get(2).intValue();
+                }
             } else {
-                if (collect.get(2) > 0) {
+                if (collect.get(2) != null) {
+                    already = collect.get(2).intValue();
                     uploadTaskResponse.setStatus(2);
                 }
-                if (collect.get(0) > 0) {
+                if (collect.get(0) != null) {
                     uploadTaskResponse.setStatus(0);
                 }
-                if (collect.get(3) > 0) {
+                if (collect.get(3) != null) {
                     uploadTaskResponse.setStatus(3);
                 }
             }
+            uploadTaskResponse.setAlready(already);
             redisTemplate.opsForValue().set(String.valueOf(member), uploadTaskResponse);
             responses.add(uploadTaskResponse);
         }
