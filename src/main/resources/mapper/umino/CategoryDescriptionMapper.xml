@@ -3,7 +3,7 @@
 <mapper namespace="com.xm.commerce.system.mapper.umino.CategoryDescriptionMapper">
   <resultMap id="BaseResultMap" type="com.xm.commerce.system.model.entity.umino.OcCategoryDescription">
     <!--@mbg.generated-->
-    <!--@Table oc_category_description-->
+    <!--@Table category_description-->
     <id column="category_id" jdbcType="INTEGER" property="categoryId" />
     <id column="language_id" jdbcType="INTEGER" property="languageId" />
     <result column="name" jdbcType="VARCHAR" property="name" />
@@ -20,7 +20,7 @@
 
   <select id="selectByNameAndLanguageId" resultMap="BaseResultMap">
     SELECT <include refid="Base_Column_List"/>
-    FROM oc_category_description
+    FROM category_description
     WHERE language_id = #{languageId} and name = #{name,jdbcType=VARCHAR}
   </select>
 </mapper>

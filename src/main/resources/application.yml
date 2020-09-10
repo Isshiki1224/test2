@@ -14,6 +14,8 @@ spring:
           username: root
           password: root
       primary: master
+#      seata: true
+#      seata-mode: at
 
   redis:
     cluster:
@@ -47,3 +49,19 @@ ftp:
 logging:
   level:
     com.xm.commerce.system.mapper: debug
+
+
+#seata:
+#  enabled: true
+#  application-id: applicationName
+#  tx-service-group: my_test_tx_group
+#  enable-auto-data-source-proxy: false   #一定要是false
+#  service:
+#    vgroup-mapping:
+#      my_test_tx_group: default  #key与上面的tx-service-group的值对应
+#    grouplist:
+#      default: 39.108.158.138:8091 #seata-server地址仅file注册中心需要
+#  config:
+#    type: file
+#  registry:
+#    type: file

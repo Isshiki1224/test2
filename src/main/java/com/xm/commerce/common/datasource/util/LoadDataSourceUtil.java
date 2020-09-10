@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 @Slf4j
 @Component
@@ -23,13 +24,14 @@ public class LoadDataSourceUtil {
 	@Resource
 	private DataSourceCreator dataSourceCreator;
 
-	public Set<String> now() {
+	public CopyOnWriteArraySet<String> now() {
 		DynamicRoutingDataSource ds = (DynamicRoutingDataSource) dataSource;
-		return ds.getCurrentDataSources().keySet();
+//		CopyOnWriteArraySet
+		return new CopyOnWriteArraySet<>(ds.getCurrentDataSources().keySet());
 	}
 
 	public boolean add(EcommerceSite record) throws SiteMessageException {
-		Set<String> now = now();
+		CopyOnWriteArraySet<String> now = now();
 		for (String s : now) {
 			if (record.getDbName().equals(s)) {
 				return false;
@@ -45,7 +47,7 @@ public class LoadDataSourceUtil {
 				.build();
 		BeanUtils.copyProperties(config, dataSourceProperty);
 		DynamicRoutingDataSource ds = (DynamicRoutingDataSource) dataSource;
-		DataSource dataSource = null;
+		DataSource dataSource;
 		try {
 			dataSource = dataSourceCreator.createDataSource(dataSourceProperty);
 		} catch (Exception e) {
@@ -56,7 +58,7 @@ public class LoadDataSourceUtil {
 	}
 
 	public boolean remove(String name) {
-		Set<String> now = now();
+		CopyOnWriteArraySet<String> now = now();
 		for (String s : now) {
 			if (name.equals(s)) {
 				DynamicRoutingDataSource ds = (DynamicRoutingDataSource) dataSource;

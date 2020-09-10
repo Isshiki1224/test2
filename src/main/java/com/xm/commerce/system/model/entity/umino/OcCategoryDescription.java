@@ -1,5 +1,6 @@
 package com.xm.commerce.system.model.entity.umino;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,13 +9,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@ApiModel(value="com-xm-commerce-system-model-entity-umino-OcCategoryDescription")
+
 @Getter
 @Setter
 @ToString
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@TableName("category_description")
 public class OcCategoryDescription {
     private Integer categoryId;
 

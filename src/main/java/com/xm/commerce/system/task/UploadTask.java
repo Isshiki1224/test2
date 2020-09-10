@@ -45,13 +45,13 @@ public class UploadTask {
         log.info("product info: {}", productStore);
         Integer uid = uploadTaskDto.getUid();
         if (site.getSiteCategory()) {
-            OpenCartAuthDto openCartAuthDto = (OpenCartAuthDto) redisTemplate.opsForValue().get(RedisConstant.OPENCART_TOKEN + site.getId());
-            if (openCartAuthDto == null) {
-                openCartAuthDto = upload2WebProductService.login2OpenCart2(site, singleKey);
-            }
-            productStore = upload2WebProductService.uploadPic2OpenCart2(productStore, site, openCartAuthDto, singleKey);
             boolean result = false;
             try {
+                OpenCartAuthDto openCartAuthDto = (OpenCartAuthDto) redisTemplate.opsForValue().get(RedisConstant.OPENCART_TOKEN + site.getId());
+                if (openCartAuthDto == null) {
+                    openCartAuthDto = upload2WebProductService.login2OpenCart2(site, singleKey);
+                }
+                productStore = upload2WebProductService.uploadPic2OpenCart2(productStore, site, openCartAuthDto, singleKey);
                 result = upload2WebProductService.upload2OpenCart2(productStore, uid, site);
             } catch (Exception e) {
                 e.printStackTrace();

@@ -30,7 +30,7 @@ public class UploadTaskConsumer {
         if (executor.getThreadPoolExecutor().getQueue().remainingCapacity() > 20) {
             Object task;
             log.info("active pool count " + executor.getActiveCount());
-            log.info("core pool size " + executor.getThreadPoolExecutor().getQueue().remainingCapacity());
+            log.info("remainingCapacity " + executor.getThreadPoolExecutor().getQueue().remainingCapacity());
             task = redisTemplate.opsForList().leftPop(RedisConstant.UPLOAD_TASK_LIST_KEY);
             if (task == null) {
                 return;

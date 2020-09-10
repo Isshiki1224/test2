@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.xm.commerce.system.mapper.umino.CategoryDescriptionMapper;
 import com.xm.commerce.system.mapper.umino.CategoryMapper;
+import com.xm.commerce.system.mapper.umino.OcCategoryToStoreMapper;
+import com.xm.commerce.system.mapper.umino.OcProductToStoreMapper;
 import com.xm.commerce.system.mapper.umino.OptionDescriptionMapper;
 import com.xm.commerce.system.mapper.umino.OptionMapper;
 import com.xm.commerce.system.mapper.umino.OptionValueDescriptionMapper;
@@ -18,6 +20,7 @@ import com.xm.commerce.system.mapper.umino.ProductToCategoryMapper;
 import com.xm.commerce.system.model.entity.ecommerce.EcommerceProductStore;
 import com.xm.commerce.system.model.entity.umino.OcCategory;
 import com.xm.commerce.system.model.entity.umino.OcCategoryDescription;
+import com.xm.commerce.system.model.entity.umino.OcCategoryToStore;
 import com.xm.commerce.system.model.entity.umino.OcOption;
 import com.xm.commerce.system.model.entity.umino.OcOptionDescription;
 import com.xm.commerce.system.model.entity.umino.OcOptionValue;
@@ -28,6 +31,8 @@ import com.xm.commerce.system.model.entity.umino.OcProductImage;
 import com.xm.commerce.system.model.entity.umino.OcProductOption;
 import com.xm.commerce.system.model.entity.umino.OcProductOptionValue;
 import com.xm.commerce.system.model.entity.umino.OcProductToCategory;
+import com.xm.commerce.system.model.entity.umino.OcProductToStore;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +42,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+@Slf4j
 @Service
 public class ProductDynamicDbService {
 	@Resource
@@ -63,6 +69,10 @@ public class ProductDynamicDbService {
 	ProductOptionValueMapper productOptionValueMapper;
 	@Resource
 	OptionValueDescriptionMapper optionValueDescriptionMapper;
+	@Resource
+	OcProductToStoreMapper ocProductToStoreMapper;
+	@Resource
+	OcCategoryToStoreMapper ocCategoryToStoreMapper;
 
 	@DS("#siteDbName")
 	public void insertCategory(String name, Integer productId, Integer parentId, String siteDbName) {
@@ -92,7 +102,18 @@ public class ProductDynamicDbService {
 					.metaKeyword("")
 					.build();
 			categoryDescriptionMapper.insert(categoryDescription);
+			OcCategoryToStore categoryToStore = OcCategoryToStore.builder()
+					.categoryId(categoryId)
+					.storeId(0)
+					.build();
+			ocCategoryToStoreMapper.insert(categoryToStore);
+
 		} else {
+			OcCategoryToStore categoryToStore = OcCategoryToStore.builder()
+					.categoryId(categoryDescriptions.get(0).getCategoryId())
+					.storeId(0)
+					.build();
+			ocCategoryToStoreMapper.insert(categoryToStore);
 			productToCategoryMapper.insert(new OcProductToCategory(productId, categoryDescriptions.get(0).getCategoryId()));
 		}
 	}
@@ -106,7 +127,7 @@ public class ProductDynamicDbService {
 			OcProductImage productImage = OcProductImage.builder()
 					.productId(productId)
 					.image(image)
-					.isRotate(true)
+//					.isRotate(true)
 					.sortOrder(0)
 					.build();
 			productImageMapper.insert(productImage);
@@ -257,9 +278,21 @@ public class ProductDynamicDbService {
 
 	@DS("#siteDbName")
 	public boolean isSkuNotExist(String sku, String siteDbName) {
+		log.info("sku= " + sku);
+
 		LambdaQueryWrapper<OcProduct> wrapper = Wrappers.lambdaQuery();
 		wrapper.eq(OcProduct::getSku, sku);
 		List<OcProduct> ocProducts = productMapper.selectList(wrapper);
+		log.info("products" + ocProducts.toString());
 		return ocProducts.isEmpty();
+	}
+
+	@DS("#siteDbName")
+	public void insertProductToStore(Integer productId, String siteDbName) {
+		OcProductToStore ocProductToStore = OcProductToStore.builder()
+				.productId(productId)
+				.storeId(0)
+				.build();
+		ocProductToStoreMapper.insert(ocProductToStore);
 	}
 }

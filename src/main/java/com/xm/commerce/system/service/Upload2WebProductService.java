@@ -38,6 +38,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -59,6 +60,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -443,20 +445,21 @@ public class Upload2WebProductService {
 //    }
 
     public void uploadAndCreated(String url, HttpEntity request, String singleKey) throws Exception {
-        String body;
+        String body = null;
         try {
             body = restTemplate.postForEntity(url, request, String.class).getBody();
         } catch (Exception e) {
-            UploadTaskDto uploadTaskDto = (UploadTaskDto) redisTemplate.opsForValue().get(singleKey);
-            if (uploadTaskDto == null) {
-                log.info("uploadTaskDto not exist");
-                throw new ResourceNotFoundException();
-            }
-            uploadTaskDto.setErrorMessage("站点出错");
-            uploadTaskDto.setTaskStatus(3);
-            redisTemplate.opsForValue().set(singleKey, uploadTaskDto);
-            uploadTaskWebSocket.sendMessage(uploadTaskDto, uploadTaskDto.getUsername());
-            throw new SiteNotFoundException(ImmutableMap.of("站点信息错误", ""));
+            log.info(e.getMessage());
+//            UploadTaskDto uploadTaskDto = (UploadTaskDto) redisTemplate.opsForValue().get(singleKey);
+//            if (uploadTaskDto == null) {
+//                log.info("uploadTaskDto not exist");
+//                throw new ResourceNotFoundException();
+//            }
+//            uploadTaskDto.setErrorMessage("站点出错");
+//            uploadTaskDto.setTaskStatus(3);
+//            redisTemplate.opsForValue().set(singleKey, uploadTaskDto);
+//            uploadTaskWebSocket.sendMessage(uploadTaskDto, uploadTaskDto.getUsername());
+//            throw new SiteNotFoundException(ImmutableMap.of("站点信息错误", ""));
         }
         log.info("body::::" + body);
         if (body != null) {
@@ -561,8 +564,8 @@ public class Upload2WebProductService {
 //        return result;
 //    }
 
-    public OpenCartAuthDto login2OpenCart2(EcommerceSite site, String singleKey) {
-        try {
+    public OpenCartAuthDto login2OpenCart2(EcommerceSite site, String singleKey) throws Exception{
+//        try {
             String domain = site.getDomain();
             String url = domain + "?route=common/login";
             HttpHeaders httpHeaders = new HttpHeaders();
@@ -580,7 +583,7 @@ public class Upload2WebProductService {
             response = restTemplate.postForEntity(url, request, String.class);
             URI location = response.getHeaders().getLocation();
             List<String> cookie = response.getHeaders().get("Set-Cookie");
-            String token;
+            String token = null;
             HashMap<String, Object> result = new HashMap<>();
             if (location != null && cookie != null) {
                 log.info("登陆成功");
@@ -590,28 +593,25 @@ public class Upload2WebProductService {
                 log.info(cookie.toString());
                 result.put("token", token);
                 result.put("Cookie", cookie);
-            } else {
-                throw new SiteNotFoundException();
             }
             return new OpenCartAuthDto(token, cookie);
-        } catch (Exception e) {
-            log.info(e.getMessage());
-            UploadTaskDto uploadTaskDto = (UploadTaskDto) redisTemplate.opsForValue().get(singleKey);
-            if (uploadTaskDto == null) {
-                log.info("uploadTaskDto not exist");
-                throw new ResourceNotFoundException();
-            }
-            uploadTaskDto.setErrorMessage(e.getMessage());
-            uploadTaskDto.setTaskStatus(3);
-            redisTemplate.opsForValue().set(singleKey, uploadTaskDto);
-            try {
-                uploadTaskWebSocket.sendMessage(uploadTaskDto, uploadTaskDto.getUsername());
-            } catch (Exception exception) {
-                log.info("websocket异常，{}", exception.getMessage());
-                exception.printStackTrace();
-            }
-            throw new RuntimeException();
-        }
+//        } catch (Exception e) {
+//            log.info(e.getMessage());
+//            UploadTaskDto uploadTaskDto = (UploadTaskDto) redisTemplate.opsForValue().get(singleKey);
+//            if (uploadTaskDto == null) {
+//                log.info("uploadTaskDto not exist");
+//                throw new ResourceNotFoundException();
+//            }
+//            uploadTaskDto.setErrorMessage(e.getMessage());
+//            uploadTaskDto.setTaskStatus(3);
+//            redisTemplate.opsForValue().set(singleKey, uploadTaskDto);
+//            try {
+//                uploadTaskWebSocket.sendMessage(uploadTaskDto, uploadTaskDto.getUsername());
+//            } catch (Exception exception) {
+//                log.info("websocket异常，{}", exception.getMessage());
+//                exception.printStackTrace();
+//            }
+//        }
     }
 
     public boolean upload2Shopify2(EcommerceProductStore productStore, EcommerceSite site, Integer uid, String singleKey) throws Exception {
@@ -824,19 +824,20 @@ public class Upload2WebProductService {
         for (String s : split) {
             fileSystemResource = imageUrl2FSR(s);
             MultiValueMap<String, Object> uploadParam = new LinkedMultiValueMap<>();
-            uploadParam.add("file[]", fileSystemResource);
+            uploadParam.add("file", fileSystemResource);
             HttpEntity request = new HttpEntity(uploadParam, httpHeaders);
             uploadAndCreated(url, request, singleKey);
-            imgSet.add("catalog" + fileSystemResource.getPath().substring(fileSystemResource.getPath().lastIndexOf("/")));
+            imgSet.add("proimg" + fileSystemResource.getPath().substring(fileSystemResource.getPath().lastIndexOf("/")));
             boolean result = fileSystemResource.getFile().delete();
         }
         productStore.setImage(String.join(",", imgSet));
         return productStore;
     }
 
-    public boolean upload2OpenCart2(EcommerceProductStore productStore, Integer uid, EcommerceSite site) throws SiteMessageException {
 
-        Set<String> now = loadDataSourceUtil.now();
+    public boolean upload2OpenCart2(EcommerceProductStore productStore, Integer uid, EcommerceSite site) throws Exception {
+
+        CopyOnWriteArraySet<String> now = loadDataSourceUtil.now();
         for (String s : now) {
             if (!s.equals(site.getDbName())) {
                 loadDataSourceUtil.add(site);
@@ -866,6 +867,10 @@ public class Upload2WebProductService {
             JSONArray optionValueArray = jsonObject.getJSONArray(key);
             productDynamicDbService.insertOptions(productStore, productId, key, optionValueArray, siteDbName);
         }
+
+        productDynamicDbService.insertProductToStore(productId, siteDbName);
+
+
         productStoreMapper.updateByPrimaryKeySelective(EcommerceProductStore.builder()
                 .id(productStore.getId())
                 .uploadOpencartBy(uid)
@@ -896,7 +901,7 @@ public class Upload2WebProductService {
             uploadTaskResponse.setAll(productStores.size());
             Map<Integer, Long> collect = productStores.stream().map(UploadTaskDto::getTaskStatus)
                     .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-            log.info("{}, {}", uploadTaskResponse.getTaskTime(), collect.toString());
+//            log.info("{}, {}", uploadTaskResponse.getTaskTime(), collect.toString());
             // calculate task status from multi tasks
             // status 0: waiting 1: executing 2: finished 3: error
             int already = 0;
