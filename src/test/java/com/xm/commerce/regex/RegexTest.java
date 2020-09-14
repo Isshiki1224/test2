@@ -1,3 +1,5 @@
+package com.xm.commerce.regex;
+
 import org.junit.jupiter.api.Test;
 
 import java.util.regex.Matcher;

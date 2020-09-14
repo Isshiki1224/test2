@@ -17,6 +17,10 @@ import com.xm.commerce.system.util.FileUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -102,6 +106,19 @@ public class ProductStoreService {
         record.setDataAdded(new Date());
         record.setDataModified(new Date());
         return productStoreMapper.insertSelective(record);
+    }
+
+    private String handleProductDescription(String description) {
+        Document document = Jsoup.parse(description);
+        Elements images = document.select("img");
+        for (Element img : images) {
+            String originImageUrl = img.attr("src");
+            // todo parse origin image url to customize url
+            img.attr("src", "customizedUrl");
+        }
+        Elements a = document.select("a");
+        a.remove();
+        return document.body().toString();
     }
 
     public ProductResponse selectRespByPrimaryKey(Integer id) {
