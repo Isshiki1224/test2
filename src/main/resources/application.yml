@@ -60,7 +60,7 @@ logging:
 #    vgroup-mapping:
 #      my_test_tx_group: default  #key与上面的tx-service-group的值对应
 #    grouplist:
-#      default: 39.108.158.138:8091 #seata-server地址仅file注册中心需要
+#      default: 10.10.10.22:8091 #seata-server地址仅file注册中心需要
 #  config:
 #    type: file
 #  registry:

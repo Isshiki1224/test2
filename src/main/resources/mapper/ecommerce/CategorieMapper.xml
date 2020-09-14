@@ -18,7 +18,7 @@
   <select id="findCategorieByName" resultMap="BaseResultMap">
     SELECT <include refid="Base_Column_List"/>
     FROM ecommerce_category
-    WHERE name like concat('%', #{name}, '%')
+    WHERE name COLLATE utf8mb4_general_ci like concat('%', #{name}, '%')
   </select>
 
   <select id="selectByName" resultMap="BaseResultMap">

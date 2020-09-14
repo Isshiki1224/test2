@@ -1,6 +1,7 @@
 package com.xm.commerce.system.service;
 
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.google.common.collect.ImmutableMap;
 import com.xm.commerce.common.datasource.util.LoadDataSourceUtil;
 import com.xm.commerce.common.exception.CurrentUserException;
@@ -820,23 +821,24 @@ public class Upload2WebProductService {
         String image = productStore.getImage();
         FileSystemResource fileSystemResource;
         String[] split = image.split(",");
-        Set<String> imgSet = new HashSet<>();
+//        Set<String> imgList = new HashSet<>();
+        List<String> imgList = new ArrayList<>();
         for (String s : split) {
             fileSystemResource = imageUrl2FSR(s);
             MultiValueMap<String, Object> uploadParam = new LinkedMultiValueMap<>();
             uploadParam.add("file", fileSystemResource);
             HttpEntity request = new HttpEntity(uploadParam, httpHeaders);
             uploadAndCreated(url, request, singleKey);
-            imgSet.add("proimg" + fileSystemResource.getPath().substring(fileSystemResource.getPath().lastIndexOf("/")));
+            imgList.add("proimg" + fileSystemResource.getPath().substring(fileSystemResource.getPath().lastIndexOf("/")));
             boolean result = fileSystemResource.getFile().delete();
         }
-        productStore.setImage(String.join(",", imgSet));
+        productStore.setImage(String.join(",", imgList));
         return productStore;
     }
 
 
+    @DS("master")
     public boolean upload2OpenCart2(EcommerceProductStore productStore, Integer uid, EcommerceSite site) throws Exception {
-
         CopyOnWriteArraySet<String> now = loadDataSourceUtil.now();
         for (String s : now) {
             if (!s.equals(site.getDbName())) {

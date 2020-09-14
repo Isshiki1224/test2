@@ -1,7 +1,7 @@
 package com.xm.commerce.system.service;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Sets;
+import com.google.common.collect.Lists;
 import com.xm.commerce.common.exception.CurrentUserException;
 import com.xm.commerce.common.exception.FileUploadException;
 import com.xm.commerce.common.exception.ProductAlreadyExistException;
@@ -17,6 +17,7 @@ import com.xm.commerce.system.util.FileUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -31,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.xm.commerce.system.constant.EcommerceConstant.SUPPORTED_PIC_SUFFIX;
@@ -48,8 +48,8 @@ public class ProductStoreService {
     private FileUtil fileUtil;
     @Value("${ftp.ip}")
     private String ip;
-
-
+    @Value("${ftp.domain}")
+    private String domain;
 
     public EcommerceUser getUser(){
         EcommerceUser user = currentUserUtils.getCurrentUser();
@@ -64,6 +64,19 @@ public class ProductStoreService {
     }
 
 
+    public String switch2LocalUrl(String url, String currentUsername, boolean isVerifyExtension) throws Exception {
+        byte[] bytes = IOUtils.toByteArray(new URL(url.startsWith("https") ? url : "https:" + url));
+        String extension = FilenameUtils.getExtension(url);
+        if (isVerifyExtension) {
+            if (!Arrays.asList(SUPPORTED_PIC_SUFFIX).contains(extension)) {
+                throw new FileUploadException(ImmutableMap.of("格式不正确", extension));
+            }
+        }
+        List<FileUploadDto> fileUploadDtos = fileUtil.fileUploadByByte(new PictureDto(bytes, extension), currentUsername + "/");
+        log.info(fileUploadDtos.get(0).getUrl());
+        return fileUploadDtos.get(0).getUrl();
+    }
+
     public int insertSelective(EcommerceProductStore record) throws Exception {
 
         List<EcommerceProductStore> ecommerceProductStores = productStoreMapper.selectByNameAndUid(record.getProductName(), getUser().getId());
@@ -71,50 +84,62 @@ public class ProductStoreService {
             throw new ProductAlreadyExistException(ImmutableMap.of("商品已经存在", record.getProductName()));
         }
 
+        if (record.getCategory().contains("&amp;")){
+            String replace = record.getCategory().replace("&amp;", "&");
+            record.setCategory(replace);
+        }
+
         EcommerceUser ecommerceUser = getUser();
         StringBuilder sb = new StringBuilder();
         String image = record.getImage();
         List<PictureDto> pictureDtoList = new ArrayList<>();
         String[] imgs = image.split(",");
-        Set<String> imgSet = Sets.newHashSet(imgs);
+        List<String> imgList = Lists.newArrayList(imgs);
         for (String s : imgs) {
             if (!s.startsWith("http://" + ip)) {
                 InputStream inputStream = new URL(s).openStream();
                 byte[] bytes = IOUtils.toByteArray(inputStream);
-//                pictureDtoList.add(new PictureDto(bytes, s));
-
                 String extension = FilenameUtils.getExtension(s);
                 pictureDtoList.add(new PictureDto(bytes, extension));
                 if (!Arrays.asList(SUPPORTED_PIC_SUFFIX).contains(extension)) {
                     throw new FileUploadException(ImmutableMap.of("格式不正确", extension));
                 }
-                imgSet.remove(s);
+                imgList.remove(s);
             }
         }
         List<FileUploadDto> fileUploadDtos = fileUtil.fileUploadByBytes(pictureDtoList, ecommerceUser.getUsername() + "/");
-        imgSet.addAll(fileUploadDtos.stream().map(FileUploadDto::getUrl).collect(Collectors.toSet()));
+        imgList.addAll(fileUploadDtos.stream().map(FileUploadDto::getUrl).collect(Collectors.toList()));
 
         log.info("image" + image);
 
         if (record.getMetaTagTitle() == null || "".equals(record.getMetaTagTitle())) {
             record.setMetaTagTitle(record.getProductName());
         }
+        if (StringUtils.isNotBlank(record.getDescription())) {
+            try {
+                String handledDescription = handleProductDescription(record.getDescription());
+                record.setDescription(handledDescription);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         record.setUid(ecommerceUser.getId());
         record.setUploadOpencart(false);
         record.setUploadShopify(false);
-        record.setImage(String.join(",", imgSet));
+        record.setImage(String.join(",", imgList));
         record.setDataAdded(new Date());
         record.setDataModified(new Date());
         return productStoreMapper.insertSelective(record);
     }
 
-    private String handleProductDescription(String description) {
+    private String handleProductDescription(String description) throws Exception {
         Document document = Jsoup.parse(description);
         Elements images = document.select("img");
+        String currentUsername = currentUserUtils.getCurrentUsername();
         for (Element img : images) {
             String originImageUrl = img.attr("src");
-            // todo parse origin image url to customize url
-            img.attr("src", "customizedUrl");
+            String customizedUrl = switch2LocalUrl(originImageUrl, currentUsername, false);
+            img.attr("src", customizedUrl);
         }
         Elements a = document.select("a");
         a.remove();

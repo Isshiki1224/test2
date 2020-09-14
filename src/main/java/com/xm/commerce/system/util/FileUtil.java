@@ -58,6 +58,11 @@ public class FileUtil {
 		return FtpUtils.uploadFile(ftpConfigReader.getMap(), pictureDtoList, uploadDir);
 	}
 
+	public List<FileUploadDto> fileUploadByByte(PictureDto pictureDto, String uploadDir) throws Exception {
+		//文件上传
+		return FtpUtils.uploadFile(ftpConfigReader.getMap(), Collections.singletonList(pictureDto), uploadDir);
+	}
+
 	public static boolean checkFileSuffix(MultipartFile file, String[] suffix) {
 		String filename = file.getOriginalFilename();
 		for (String s : suffix) {
