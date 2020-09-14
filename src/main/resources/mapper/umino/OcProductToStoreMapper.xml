@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xm.commerce.system.mapper.umino.OcProductToStoreMapper">
+  <resultMap id="BaseResultMap" type="com.xm.commerce.system.model.entity.umino.OcProductToStore">
+    <!--@mbg.generated-->
+    <!--@Table product_to_store-->
+    <id column="product_id" jdbcType="INTEGER" property="productId" />
+    <id column="store_id" jdbcType="INTEGER" property="storeId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    product_id, store_id
+  </sql>
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    <!--@mbg.generated-->
+    delete from product_to_store
+    where product_id = #{productId,jdbcType=INTEGER}
+      and store_id = #{storeId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.xm.commerce.system.model.entity.umino.OcProductToStore">
+    <!--@mbg.generated-->
+    insert into product_to_store (product_id, store_id)
+    values (#{productId,jdbcType=INTEGER}, #{storeId,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xm.commerce.system.model.entity.umino.OcProductToStore">
+    <!--@mbg.generated-->
+    insert into product_to_store
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="productId != null">
+        product_id,
+      </if>
+      <if test="storeId != null">
+        store_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="productId != null">
+        #{productId,jdbcType=INTEGER},
+      </if>
+      <if test="storeId != null">
+        #{storeId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="selectByProductIdAndStoreId" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/>
+    from product_to_store where product_id = #{productId} and store_id = #{storeId}
+  </select>
+</mapper>
